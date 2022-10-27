@@ -1,7 +1,11 @@
 #pragma once
 
-#include <ncurses.h>
+#include <stdbool.h>
 #include "maze/maze.h"
+#include "rogueutil.h"
+#define NOCOLOR (-1)
+
+void _char_to_move(maze_t *maze, int c);
 
 void render_init();
 void render_destroy();
