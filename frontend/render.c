@@ -12,7 +12,7 @@ void render_destroy() {
     showcursor();
 }
 
-void _char_to_move(maze_t *maze, int c) {
+void char_to_move(maze_t *maze, int c) {
     if (c == 'w') maze_move(maze, 0, -1);
     if (c == 'a') maze_move(maze, -1, 0);
     if (c == 's') maze_move(maze, 0, 1);
@@ -20,20 +20,21 @@ void _char_to_move(maze_t *maze, int c) {
 }
 
 void render_loop(int argc, char **argv) {
-    char a[] = {};
-    maze_t maze = {a, 0, 0};
-    load("/home/stark/CLionProjects/uni/snake-labyrinth/maze1.txt", &maze);
+    maze_t *maze = maze_make();
+    load("/home/stark/CLionProjects/uni/snake-labyrinth/maze1.txt", maze);
 
-    render_maze(&maze, false);
+    render_maze(maze);
     int c;
     while (1) {
         c = getch();
-        _char_to_move(&maze, c);
-        render_maze(&maze, false);
+        if (c == 'q') break;
+        char_to_move(maze, c);
+        render_maze(maze);
     }
+    maze_destroy(maze);
 }
 
-void render_maze(maze_t *maze, bool with_input) {
+void render_maze(maze_t *maze) {
     cls();
     for (int r = 0; r < maze->rows; ++r) {
         for (int c = 0; c < maze->cols; ++c) {

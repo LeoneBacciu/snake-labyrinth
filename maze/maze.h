@@ -18,6 +18,8 @@ typedef struct {
     char *path;
 } maze_score_t;
 
+maze_t *maze_make();
+void maze_destroy(maze_t *maze);
 
 void maze_move(maze_t *maze, int dx, int dy);
 void maze_resize(maze_t *maze, int x, int y);

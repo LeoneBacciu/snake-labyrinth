@@ -1,5 +1,15 @@
 #include "maze.h"
 
+maze_t *maze_make() {
+    maze_t *maze;
+    maze = malloc(sizeof(maze_t));
+    return maze;
+}
+
+void maze_destroy(maze_t *maze) {
+    free(maze);
+}
+
 void maze_move(maze_t *maze, int dx, int dy) {
     maze->pos.x = clamp(0, maze->pos.x + dx, maze->cols - 1);
     maze->pos.y = clamp(0, maze->pos.y + dy, maze->rows - 1);
