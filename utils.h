@@ -12,7 +12,7 @@ int clamp(int low, int value, int high);
 
 
 #ifdef _WIN32
-__size_t getline(char **lineptr, size_t *n, FILE *stream);
+size_t getline(char **lineptr, size_t *n, FILE *stream);
 #endif
 
 #endif //SNAKE_LABYRINTH_UTILS_H

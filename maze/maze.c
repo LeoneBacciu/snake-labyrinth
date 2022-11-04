@@ -11,8 +11,12 @@ void maze_destroy(maze_t *maze) {
 }
 
 void maze_move(maze_t *maze, int dx, int dy) {
-    maze->pos.x = clamp(0, maze->pos.x + dx, maze->cols - 1);
-    maze->pos.y = clamp(0, maze->pos.y + dy, maze->rows - 1);
+    int nx = clamp(0, maze->pos.x + dx, maze->cols - 1);
+    int ny = clamp(0, maze->pos.y + dy, maze->rows - 1);
+    if (can_go(maze, nx, ny)) {
+        maze->pos.x = nx;
+        maze->pos.y = ny;
+    }
 }
 
 void maze_resize(maze_t *maze, int x, int y) {
@@ -60,4 +64,8 @@ void load(char *path, maze_t *maze) {
 
     fclose(fp);
     if (line) free(line);
+}
+
+bool can_go(maze_t *maze, int x, int y) {
+    return (mget(maze, x, y) != '#');
 }
