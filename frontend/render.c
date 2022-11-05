@@ -21,11 +21,9 @@ void char_to_move(maze_t *maze, int c) {
 
 void render_loop(int argc, char **argv) {
     maze_t *maze = maze_make();
-#ifdef _WIN32
-    load("..\\maze1.txt", maze);
-#else
-    load("/home/stark/CLionProjects/uni/snake-labyrinth/maze1.txt", maze);
-#endif
+    printf("%s", argv[1]);
+
+    maze_load(maze, argv[1]);
 
     render_maze(maze);
     int c;

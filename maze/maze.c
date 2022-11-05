@@ -25,20 +25,21 @@ void maze_move(maze_t *maze, int dx, int dy) {
 }
 
 void maze_resize(maze_t *maze, int x, int y) {
+    free(maze->_m);
     maze->cols = x;
     maze->rows = y;
-    maze->m = malloc(sizeof(char) * y * x);
+    maze->_m = malloc(sizeof(char) * y * x);
 }
 
 char mget(maze_t *maze, int x, int y) {
-    return maze->m[y * (maze->cols) + x];
+    return maze->_m[y * (maze->cols) + x];
 }
 
 void mset(maze_t *maze, int x, int y, char v) {
-    maze->m[y * (maze->cols) + x] = v;
+    maze->_m[y * (maze->cols) + x] = v;
 }
 
-void load(char *path, maze_t *maze) {
+void maze_load(maze_t *maze, char *path) {
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
