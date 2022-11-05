@@ -17,6 +17,11 @@ void maze_move(maze_t *maze, int dx, int dy) {
         maze->pos.x = nx;
         maze->pos.y = ny;
     }
+    if ((mget(maze, nx, ny) == '$')){
+        mset(maze, nx, ny, ' ');
+    } else if ((mget(maze, nx, ny) == '!')) {
+        mset(maze, nx, ny, ' ');
+    }
 }
 
 void maze_resize(maze_t *maze, int x, int y) {
