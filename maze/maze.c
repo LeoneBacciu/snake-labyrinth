@@ -17,11 +17,8 @@ void maze_move(maze_t *maze, int dx, int dy) {
         maze->pos.x = nx;
         maze->pos.y = ny;
     }
-    if ((mget(maze, nx, ny) == '$')){
-        mset(maze, nx, ny, ' ');
-    } else if ((mget(maze, nx, ny) == '!')) {
-        mset(maze, nx, ny, ' ');
-    }
+    char c = mget(maze, nx, ny);
+    if (c == '$' || c == '!') mset(maze, nx, ny, ' ');
 }
 
 void maze_resize(maze_t *maze, int x, int y) {
@@ -45,8 +42,10 @@ void maze_load(maze_t *maze, char *path) {
     size_t len = 0;
 
     fp = fopen(path, "r");
-    if (fp == NULL)
+    if (fp == NULL) {
+        printf("File not found!\n");
         exit(EXIT_FAILURE);
+    }
 
     int x, y;
     fscanf(fp, "%d %d\n", &x, &y);

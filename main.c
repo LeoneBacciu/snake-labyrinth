@@ -3,17 +3,13 @@
 
 void signal_handler() {
     render_destroy();
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char **argv) {
-#ifdef _WIN32
-
-#else
     signal(SIGINT, signal_handler);
-#endif
     render_init();
     render_loop(argc, argv);
     render_destroy();
-    return 0;
+    return EXIT_SUCCESS;
 }

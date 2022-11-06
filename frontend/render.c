@@ -1,5 +1,4 @@
 #include "render.h"
-#include <menu.h>
 
 #define MCOLOR_DEFAULT 0
 #define MCOLOR_ME 1
@@ -19,7 +18,7 @@ void render_init() {
     if (!has_colors()) {
         endwin();
         printf("Your terminal does not support color\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     curs_set(0);
     start_color();
@@ -39,10 +38,10 @@ void render_destroy() {
 }
 
 void char_to_move(maze_t *maze, int c) {
-    if (c == 'w') maze_move(maze, 0, -1);
-    if (c == 'a') maze_move(maze, -1, 0);
-    if (c == 's') maze_move(maze, 0, 1);
-    if (c == 'd') maze_move(maze, 1, 0);
+    if (c == 'w' || c == KEY_UP) maze_move(maze, 0, -1);
+    if (c == 'a' || c == KEY_LEFT) maze_move(maze, -1, 0);
+    if (c == 's' || c == KEY_DOWN) maze_move(maze, 0, 1);
+    if (c == 'd' || c == KEY_RIGHT) maze_move(maze, 1, 0);
 }
 
 attr_t char_to_color(char ch) {
@@ -100,9 +99,9 @@ void render_maze(maze_t *maze) {
                 attron(color);
                 last_color = color;
             }
-            printw("%c", char_to_display(ch));
+            addch(char_to_display(ch));
         }
-        printw("\n");
+        addch('\n');
     }
     refresh();
 }
