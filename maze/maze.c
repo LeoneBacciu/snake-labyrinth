@@ -70,7 +70,9 @@ void maze_load(maze_t *maze, char *path) {
     fclose(fp);
     if (line) free(line);
 }
-
+bool is_end (maze_t *maze){
+    return (maze->pos.x == maze->end.x) && (maze->pos.y == maze->end.y);
+}
 bool can_go(maze_t *maze, int x, int y) {
     return (mget(maze, x, y) != '#');
 }

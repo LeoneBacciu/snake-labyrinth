@@ -32,16 +32,16 @@ void render_init() {
 }
 
 void render_destroy() {
-    clear();
+    //clear();
     curs_set(1);
     endwin();
 }
 
 void char_to_move(maze_t *maze, int c) {
-    if (c == 'w' || c == KEY_UP) maze_move(maze, 0, -1);
-    if (c == 'a' || c == KEY_LEFT) maze_move(maze, -1, 0);
-    if (c == 's' || c == KEY_DOWN) maze_move(maze, 0, 1);
-    if (c == 'd' || c == KEY_RIGHT) maze_move(maze, 1, 0);
+    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, 0, -1);
+    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, -1, 0);
+    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, 0, 1);
+    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, 1, 0);
 }
 
 attr_t char_to_color(char ch) {
@@ -77,6 +77,11 @@ void render_loop(int argc, char **argv) {
         c = getch();
         if (c == 'q') break;
         char_to_move(maze, c);
+        if(is_end(maze)) {
+            clear();
+            printw("You won MF");
+            break;
+        }
         render_maze(maze);
     }
     maze_destroy(maze);
@@ -84,14 +89,17 @@ void render_loop(int argc, char **argv) {
 
 void render_maze(maze_t *maze) {
     clear();
+    int ratio_x = COLS / maze->cols;
+    int ratio_y = LINES / maze->rows;
+    int ratio = MIN(ratio_x, ratio_y);
     attr_t last_color = -1;
-    for (int r = 0; r < maze->rows; ++r) {
-        for (int c = 0; c < maze->cols; ++c) {
+    for (int r = 0; r < (maze->rows) * ratio; ++r) {
+        for (int c = 0; c < (maze->cols) * ratio; ++c) {
             char ch;
+            int nr = r / ratio, nc = c / ratio;
 
-            if (maze->pos.x == c && maze->pos.y == r) ch = 'o';
-            else ch = mget(maze, c, r);
-
+            if (maze->pos.x == nc && maze->pos.y == nr) ch = 'o';
+            else ch = mget(maze, nc, nr);
             attr_t color = char_to_color(ch);
 
             if (last_color != color) {

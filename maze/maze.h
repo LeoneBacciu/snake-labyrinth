@@ -107,3 +107,4 @@ void maze_load(maze_t *maze, char *path);
  * @return \a false if the cell contains # else true
  */
 bool can_go(maze_t *maze, int x, int y);
+bool is_end (maze_t *maze);
