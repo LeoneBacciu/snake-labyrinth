@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ncurses.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include "maze/maze.h"
 
 attr_t char_to_color(char ch);

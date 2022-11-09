@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <stdlib.h>
 #include <ncurses.h>
 #include "utils.h"
 
