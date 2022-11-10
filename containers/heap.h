@@ -1,5 +1,5 @@
 /**
- * @file h.h
+ * @file heap.h
  * @brief An implementation of a Min Heap DS
  */
 
@@ -88,7 +88,7 @@ void heap_resize(heap_t *heap, size_t cap);
 bool heap_empty(heap_t *heap);
 
 /**
- * Frees the memory deleting all the data
+ * @brief Frees the memory deleting all the data
  * @param heap
  */
 void heap_destroy(heap_t *heap);

@@ -49,7 +49,7 @@ sequence_t sequence_add(sequence_t sequence, ll value);
 /**
  * Gets the element in position i
  * @param sequence
- * @param i
+ * @param i index
  * @return ith element
  */
 ll sequence_get(sequence_t sequence, size_t i);
