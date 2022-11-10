@@ -1,5 +1,5 @@
 /**
- * @file heap.h
+ * @file h.h
  * @brief An implementation of a Min Heap DS
  */
 
@@ -31,7 +31,7 @@ typedef struct {
  *  Capacity of the Heap
  * @var heap_t::size
  *  Current size of the Heap
- * @var heap_t::heap
+ * @var heap_t::h
  *  Tree of nodes, stored as an array
  *  @attention Do not use directly
  *  @see heap_node_t
@@ -39,12 +39,12 @@ typedef struct {
 typedef struct {
     size_t cap;
     size_t size;
-    heap_node_t **heap;
+    heap_node_t *h;
 } heap_t;
 
 /**
  * @brief Creates a Min Heap
- * @param cap initial capacity of the heap
+ * @param cap initial capacity of the h
  * @return pointer to a new Min Heap
  */
 heap_t *heap_create(size_t cap);
@@ -64,7 +64,7 @@ void heap_insert(heap_t *heap, int key, void *value);
  * @param node instance of a heap_node_t
  * @see heap_insert
  */
-void heap_insert_node(heap_t *heap, heap_node_t *node);
+void heap_insert_node(heap_t *heap, heap_node_t node);
 
 /**
  * @brief Extracts the element with the lowest key
@@ -88,11 +88,17 @@ void heap_resize(heap_t *heap, size_t cap);
 bool heap_empty(heap_t *heap);
 
 /**
+ * Frees the memory deleting all the data
+ * @param heap
+ */
+void heap_destroy(heap_t *heap);
+
+/**
  * @brief Gets the ith node
  * @attention For internal use only
  * @param heap
  * @param i index in the internal array
- * @return ith node
+ * @return pointer to ith node
  */
 heap_node_t *heap_get(heap_t *heap, size_t i);
 
@@ -123,7 +129,7 @@ size_t heap_rchild_index(size_t i);
 /**
  * @brief Swaps two nodes
  * @attention For internal use only
- * @param a first node
- * @param b second node
+ * @param a pointer to first node
+ * @param b pointer to second node
  */
 void heap_swap_nodes(heap_node_t *a, heap_node_t *b);

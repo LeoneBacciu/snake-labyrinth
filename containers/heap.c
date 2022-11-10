@@ -4,23 +4,21 @@ heap_t *heap_create(size_t cap) {
     heap_t *heap = malloc(sizeof(heap_t));
     heap->cap = cap;
     heap->size = 0;
-    heap->heap = malloc(cap * sizeof(heap_node_t));
+    heap->h = calloc(cap, sizeof(heap_node_t));
     return heap;
 }
 
 void heap_insert(heap_t *heap, int key, void *value) {
-    heap_node_t *node = malloc(sizeof(heap_node_t));
-    node->key = key;
-    node->value = value;
+    heap_node_t node = (heap_node_t) {key, value};
     heap_insert_node(heap, node);
 }
 
 
-void heap_insert_node(heap_t *heap, heap_node_t *node) {
+void heap_insert_node(heap_t *heap, heap_node_t node) {
     if (heap->size == heap->cap) heap_resize(heap, heap->cap * 2);
 
     size_t i = heap->size++;
-    heap->heap[i] = node;
+    heap->h[i] = node;
 
     size_t pi = heap_parent_index(i);
     heap_node_t *parent, *current;
@@ -54,18 +52,23 @@ void *heap_extract(heap_t *heap) {
 
 void heap_resize(heap_t *heap, size_t cap) {
     if (cap <= heap->cap) return;
-    heap_node_t **new = malloc(cap * sizeof(heap_node_t *));
-    memcpy(new, heap->heap, heap->cap * sizeof(heap_node_t *));
+    heap_node_t *new = calloc(cap, sizeof(heap_node_t));
+    memcpy(new, heap->h, heap->cap * sizeof(heap_node_t));
     heap->cap = cap;
-    heap->heap = new;
+    heap->h = new;
 }
 
 bool heap_empty(heap_t *heap) {
     return heap->size == 0;
 }
 
+void heap_destroy(heap_t *heap) {
+    free(heap->h);
+    free(heap);
+}
+
 heap_node_t *heap_get(heap_t *heap, size_t i) {
-    return heap->heap[i];
+    return &heap->h[i];
 }
 
 size_t heap_parent_index(size_t i) {
@@ -82,5 +85,3 @@ void heap_swap_nodes(heap_node_t *a, heap_node_t *b) {
 size_t heap_lchild_index(size_t i) { return (2 * i + 1); }
 
 size_t heap_rchild_index(size_t i) { return (2 * i + 2); }
-
-

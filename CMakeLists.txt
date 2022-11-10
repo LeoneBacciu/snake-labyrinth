@@ -19,7 +19,9 @@ include_directories(.)
 include_directories(maze)
 
 add_executable(snake_labyrinth
-        ai/heap/heap.c ai/heap/heap.h
+        containers/heap.c containers/heap.h
+        containers/matrix.c containers/matrix.h
+        containers/sequence.c containers/sequence.h
         frontend/render.c frontend/render.h
         maze/maze.c maze/maze.h
         utils.c utils.h
