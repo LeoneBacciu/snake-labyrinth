@@ -50,7 +50,7 @@ typedef struct {
  * @brief Generates an empty maze
  * @return maze_t*
  */
-maze_t *maze_make();
+maze_t *maze_create();
 
 /**
  * @brief Frees the memory of a maze
@@ -107,5 +107,5 @@ void maze_load(maze_t *maze, char *path);
  * @param y
  * @return \a false if the cell contains # else true
  */
-bool can_go(maze_t *maze, int x, int y);
-bool is_end (maze_t *maze);
+bool maze_can_go(maze_t *maze, int x, int y);
+bool maze_is_end (maze_t *maze);

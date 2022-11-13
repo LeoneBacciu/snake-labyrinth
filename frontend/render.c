@@ -79,7 +79,7 @@ char char_to_display(char ch) {
 }
 
 void render_loop(int argc, char **argv) {
-    maze_t *maze = maze_make();
+    maze_t *maze = maze_create();
 
     maze_load(maze, argv[1]);
 
@@ -90,7 +90,7 @@ void render_loop(int argc, char **argv) {
         if (c == 'q') break;
         char_to_move(maze, c);
         render_maze(maze);
-        if (maze->pos.x == maze->end.x) {
+        if (maze_is_end(maze)) {
             render_end_game();
             break;
         }
