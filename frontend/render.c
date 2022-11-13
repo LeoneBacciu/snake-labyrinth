@@ -8,6 +8,16 @@
 #define MCOLOR_WALL 5
 #define MCOLOR_WIN 6
 
+#define YOU_WON_LINES 5
+#define YOU_WON_COLS 43
+
+char you_won[YOU_WON_LINES][YOU_WON_COLS + 1] = {
+        {" \\ \\   / /          \\ \\        / /         \0"},
+        {"  \\ \\_/ /__  _   _   \\ \\  /\\  / /__  _ __  \0"},
+        {"   \\   / _ \\| | | |   \\ \\/  \\/ / _ \\| '_ \\ \0"},
+        {"    | | (_) | |_| |    \\  /\\  / (_) | | | |\0"},
+        {"    |_|\\___/ \\__,_|     \\/  \\/ \\___/|_| |_|\0"}
+};
 
 void render_init() {
     initscr();
@@ -84,9 +94,8 @@ void render_loop(int argc, char **argv) {
             clear();
             attroff(-1);
             attron(COLOR_PAIR(MCOLOR_WIN));
-            for(int i=0; i<=4; i++){
-                mvprintw((LINES/2)-5+i, (COLS-43)/2, you_won[i]);
-                printw("\n");
+            for (int i = 0; i < 5; i++) {
+                mvprintw((LINES / 2) - YOU_WON_LINES + i, (COLS - YOU_WON_COLS) / 2, "%s", you_won[i]);
             }
             mvprintw(LINES / 2 + 2, COLS / 2, "Press Q to exit game\n");
         }
@@ -96,31 +105,28 @@ void render_loop(int argc, char **argv) {
 
 void render_maze(maze_t *maze) {
     clear();
-    int ratio_x = COLS / maze->cols;
-    int ratio_y = LINES / maze->rows;
+
+    int ratio_x = COLS / maze->cols, ratio_y = LINES / maze->rows;
     int ratio = MIN(ratio_x, ratio_y);
+    int rows_term = maze->rows * ratio, cols_term = maze->cols * ratio;
+
     attr_t last_color = -1;
-    for (int r = 0; r < (maze->rows) * ratio; ++r) {
-        for (int c = 0; c < (maze->cols) * ratio; ++c) {
-            char ch;
+    for (int r = 0; r < rows_term; ++r) {
+        for (int c = 0; c < cols_term; ++c) {
             int nr = r / ratio, nc = c / ratio;
 
+            char ch;
             if (maze->pos.x == nc && maze->pos.y == nr) ch = 'o';
             else ch = mget(maze, nc, nr);
+
             attr_t color = char_to_color(ch);
             if (last_color != color) {
                 attroff(last_color);
                 attron(color);
                 last_color = color;
             }
-            mvaddch(r, (COLS - maze->cols * ratio) / 2 + c, char_to_display(ch));
+            mvaddch(r, (COLS - cols_term) / 2 + c, char_to_display(ch));
         }
-        addch('\n');
     }
     refresh();
 }
-char you_won [5][44]={  {" \\ \\   / /          \\ \\        / /         \0"},
-                        {"  \\ \\_/ /__  _   _   \\ \\  /\\  / /__  _ __  \0"},
-                        {"   \\   / _ \\| | | |   \\ \\/  \\/ / _ \\| '_ \\ \0"},
-                        {"    | | (_) | |_| |    \\  /\\  / (_) | | | |\0"},
-                        {"    |_|\\___/ \\__,_|     \\/  \\/ \\___/|_| |_|\0"}};

@@ -17,5 +17,3 @@ void render_destroy();
 void render_loop(int argc, char **argv);
 
 void render_maze(maze_t *maze);
-
-char you_won[5][44];
