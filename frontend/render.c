@@ -77,12 +77,12 @@ void render_loop(int argc, char **argv) {
         c = getch();
         if (c == 'q') break;
         char_to_move(maze, c);
-        if (is_end(maze)) {
-            clear();
-            printw("You won MF");
-            break;
-        }
         render_maze(maze);
+        if (maze->pos.x == maze->end.x) {
+            clear();
+            mvprintw(LINES / 2, COLS / 2, "You won\n");
+            mvprintw(LINES / 2 + 2, COLS / 2, "Press Q to exit game\n");
+        }
     }
     maze_destroy(maze);
 }
