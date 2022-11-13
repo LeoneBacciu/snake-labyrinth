@@ -17,3 +17,5 @@ void render_destroy();
 void render_loop(int argc, char **argv);
 
 void render_maze(maze_t *maze);
+
+void render_end_game();

@@ -91,13 +91,8 @@ void render_loop(int argc, char **argv) {
         char_to_move(maze, c);
         render_maze(maze);
         if (maze->pos.x == maze->end.x) {
-            clear();
-            attroff(-1);
-            attron(COLOR_PAIR(MCOLOR_WIN));
-            for (int i = 0; i < 5; i++) {
-                mvprintw((LINES / 2) - YOU_WON_LINES + i, (COLS - YOU_WON_COLS) / 2, "%s", you_won[i]);
-            }
-            mvprintw(LINES / 2 + 2, COLS / 2, "Press Q to exit game\n");
+            render_end_game();
+            break;
         }
     }
     maze_destroy(maze);
@@ -129,4 +124,18 @@ void render_maze(maze_t *maze) {
         }
     }
     refresh();
+}
+
+void render_end_game() {
+    clear();
+    attroff(-1);
+    attron(COLOR_PAIR(MCOLOR_WIN));
+    for (int i = 0; i < 5; i++) {
+        mvprintw((LINES / 2) - YOU_WON_LINES + i, (COLS - YOU_WON_COLS) / 2, "%s", you_won[i]);
+    }
+    mvprintw(LINES / 2 + 2, COLS / 2, "Press Q to exit game\n");
+    while (1) {
+        char ch = getch();
+        if (ch == 'q' || ch == 'Q') break;
+    }
 }
