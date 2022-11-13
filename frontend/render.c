@@ -6,6 +6,7 @@
 #define MCOLOR_DANGER 3
 #define MCOLOR_END 4
 #define MCOLOR_WALL 5
+#define MCOLOR_WIN 6
 
 
 void render_init() {
@@ -28,6 +29,7 @@ void render_init() {
     init_pair(MCOLOR_DANGER, COLOR_WHITE, COLOR_RED);
     init_pair(MCOLOR_END, COLOR_WHITE, COLOR_MAGENTA);
     init_pair(MCOLOR_WALL, COLOR_WHITE, COLOR_BLUE);
+    init_pair(MCOLOR_WIN, COLOR_YELLOW, COLOR_BLACK);
     clear();
 }
 
@@ -80,7 +82,12 @@ void render_loop(int argc, char **argv) {
         render_maze(maze);
         if (maze->pos.x == maze->end.x) {
             clear();
-            mvprintw(LINES / 2, COLS / 2, "You won\n");
+            attroff(-1);
+            attron(COLOR_PAIR(MCOLOR_WIN));
+            for(int i=0; i<=4; i++){
+                mvprintw((LINES/2)-5+i, (COLS-43)/2, you_won[i]);
+                printw("\n");
+            }
             mvprintw(LINES / 2 + 2, COLS / 2, "Press Q to exit game\n");
         }
     }
@@ -112,3 +119,8 @@ void render_maze(maze_t *maze) {
     }
     refresh();
 }
+char you_won [5][44]={  {" \\ \\   / /          \\ \\        / /         \0"},
+                        {"  \\ \\_/ /__  _   _   \\ \\  /\\  / /__  _ __  \0"},
+                        {"   \\   / _ \\| | | |   \\ \\/  \\/ / _ \\| '_ \\ \0"},
+                        {"    | | (_) | |_| |    \\  /\\  / (_) | | | |\0"},
+                        {"    |_|\\___/ \\__,_|     \\/  \\/ \\___/|_| |_|\0"}};
