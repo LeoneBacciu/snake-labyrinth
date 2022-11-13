@@ -77,7 +77,7 @@ void render_loop(int argc, char **argv) {
         c = getch();
         if (c == 'q') break;
         char_to_move(maze, c);
-        if(is_end(maze)) {
+        if (is_end(maze)) {
             clear();
             printw("You won MF");
             break;
@@ -101,13 +101,12 @@ void render_maze(maze_t *maze) {
             if (maze->pos.x == nc && maze->pos.y == nr) ch = 'o';
             else ch = mget(maze, nc, nr);
             attr_t color = char_to_color(ch);
-
             if (last_color != color) {
                 attroff(last_color);
                 attron(color);
                 last_color = color;
             }
-            addch(char_to_display(ch));
+            mvaddch(r, (COLS - maze->cols * ratio) / 2 + c, char_to_display(ch));
         }
         addch('\n');
     }
