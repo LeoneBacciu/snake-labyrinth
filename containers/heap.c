@@ -21,7 +21,7 @@ void heap_insert_node(heap_t *heap, heap_node_t node) {
 
     size_t pi = heap_parent_index(i);
     heap_node_t *parent, *current;
-    while (i > 0 && (parent = heap_get(heap, pi))->key > (current = heap_get(heap, i))->key) {
+    while (i > 0 && (parent = heap_get(heap, pi))->key < (current = heap_get(heap, i))->key) {
         heap_swap_nodes(parent, current);
         i = pi;
         pi = heap_parent_index(pi);
