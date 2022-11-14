@@ -72,6 +72,10 @@ bool heap_empty(heap_t *heap) {
 
 void heap_destroy(heap_t *heap) {
     free(heap->h);
+}
+
+void heap_free(heap_t *heap) {
+    heap_destroy(heap);
     free(heap);
 }
 

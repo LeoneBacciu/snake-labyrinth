@@ -88,10 +88,17 @@ void heap_resize(heap_t *heap, size_t cap);
 bool heap_empty(heap_t *heap);
 
 /**
- * @brief Frees the memory deleting all the data
+ * @brief Deletes all the data
  * @param heap
+ * @note Does not free the heap_t pointer
  */
 void heap_destroy(heap_t *heap);
+
+/**
+ * @brief Frees the memory and deletes all the data
+ * @param heap
+ */
+void heap_free(heap_t *heap);
 
 /**
  * @brief Gets the ith node

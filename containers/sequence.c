@@ -36,3 +36,8 @@ int sequence_last(sequence_t sequence) {
 void sequence_destroy(sequence_t *sequence) {
     free(sequence->s);
 }
+
+void sequence_free(sequence_t *sequence) {
+    sequence_destroy(sequence);
+    free(sequence);
+}

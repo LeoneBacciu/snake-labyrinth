@@ -37,7 +37,7 @@ sequence_t sequence_create();
 sequence_t sequence_element(int value);
 
 /**
- * Creates a new sequence from the one given and the value
+ * @brief Creates a new sequence from the one given and the value
  * @param sequence previous sequence
  * @param value number
  * @return sequence + {value}
@@ -45,7 +45,7 @@ sequence_t sequence_element(int value);
 sequence_t sequence_add(sequence_t sequence, int value);
 
 /**
- * Gets the element in position i
+ * @brief Gets the element in position i
  * @param sequence
  * @param i index
  * @return ith element
@@ -53,21 +53,28 @@ sequence_t sequence_add(sequence_t sequence, int value);
 int sequence_get(sequence_t sequence, size_t i);
 
 /**
- * Gets the first element of the sequence
+ * @brief Gets the first element of the sequence
  * @param sequence
  * @return first element
  */
 int sequence_first(sequence_t sequence);
 
 /**
- * Gets the last element of the sequence
+ * @brief Gets the last element of the sequence
  * @param sequence
  * @return last element
  */
 int sequence_last(sequence_t sequence);
 
 /**
- * Frees the memory and deletes all the data
+ * @brief Deletes all the data
  * @param sequence
+ * @note Does not free the sequence_t pointer
  */
 void sequence_destroy(sequence_t *sequence);
+
+/**
+ * @brief Frees the memory and deletes all the data
+ * @param sequence
+ */
+void sequence_free(sequence_t *sequence);

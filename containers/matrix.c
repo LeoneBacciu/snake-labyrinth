@@ -35,11 +35,6 @@ bool matrix_set_max(matrix_t *matrix, size_t x, size_t y, int v) {
     return false;
 }
 
-void matrix_destroy(matrix_t *matrix) {
-    free(matrix->m);
-    free(matrix);
-}
-
 matrix_t *matrix_copy(matrix_t *matrix) {
     size_t size = matrix->cols * matrix->rows * sizeof(int);
     matrix_t *new_matrix = malloc(sizeof(matrix_t));
@@ -47,4 +42,13 @@ matrix_t *matrix_copy(matrix_t *matrix) {
     new_matrix->m = malloc(size);
     memcpy(new_matrix->m, matrix->m, size);
     return new_matrix;
+}
+
+void matrix_destroy(matrix_t *matrix) {
+    free(matrix->m);
+}
+
+void matrix_free(matrix_t *matrix) {
+    matrix_destroy(matrix);
+    free(matrix);
 }

@@ -83,7 +83,14 @@ bool matrix_set_max(matrix_t *matrix, size_t x, size_t y, int v);
 matrix_t *matrix_copy(matrix_t *matrix);
 
 /**
- * @brief Frees the memory deleting all the data
+ * @brief Deletes all the data
  * @param matrix
+ * @note Does not free the matrix_t pointer
  */
 void matrix_destroy(matrix_t *matrix);
+
+/**
+ * @brief Frees the memory and deletes all the data
+ * @param matrix
+ */
+void matrix_free(matrix_t *matrix);
