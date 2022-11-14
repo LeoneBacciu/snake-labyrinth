@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <memory.h>
 
-typedef long long ll;
-
 /**
  * @struct sequence_t
  * @brief Immutable sequence of number
@@ -22,7 +20,7 @@ typedef long long ll;
  */
 typedef struct {
     size_t size;
-    ll *s;
+    int *s;
 } sequence_t;
 
 /**
@@ -36,7 +34,7 @@ sequence_t sequence_create();
  * @param value number
  * @return {value}
  */
-sequence_t sequence_element(ll value);
+sequence_t sequence_element(int value);
 
 /**
  * Creates a new sequence from the one given and the value
@@ -44,7 +42,7 @@ sequence_t sequence_element(ll value);
  * @param value number
  * @return sequence + {value}
  */
-sequence_t sequence_add(sequence_t sequence, ll value);
+sequence_t sequence_add(sequence_t sequence, int value);
 
 /**
  * Gets the element in position i
@@ -52,21 +50,21 @@ sequence_t sequence_add(sequence_t sequence, ll value);
  * @param i index
  * @return ith element
  */
-ll sequence_get(sequence_t sequence, size_t i);
+int sequence_get(sequence_t sequence, size_t i);
 
 /**
  * Gets the first element of the sequence
  * @param sequence
  * @return first element
  */
-ll sequence_first(sequence_t sequence);
+int sequence_first(sequence_t sequence);
 
 /**
  * Gets the last element of the sequence
  * @param sequence
  * @return last element
  */
-ll sequence_last(sequence_t sequence);
+int sequence_last(sequence_t sequence);
 
 /**
  * Frees the memory and deletes all the data
