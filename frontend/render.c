@@ -1,4 +1,7 @@
 #include "render.h"
+#include "ai/solver.h"
+
+#define is_challenge(s) (!strcmp(s, "--challenge"))
 
 #define MCOLOR_DEFAULT 0
 #define MCOLOR_ME 1
@@ -60,6 +63,8 @@ attr_t char_to_color(char ch) {
     switch (ch) {
         case 'o':
             return COLOR_PAIR(MCOLOR_ME);
+        case 'x':
+            return COLOR_PAIR(MCOLOR_ME);
         case '$':
             return COLOR_PAIR(MCOLOR_GOLD);
         case '!':
@@ -84,19 +89,32 @@ void render_loop(int argc, char **argv) {
     if (argc > 1) maze = maze_load_file(argv[1]);
     else exit(EXIT_FAILURE);
 
-    render_maze(maze);
-    int c;
-    while (1) {
-        c = getch();
-        if (c == 'q') break;
-        char_to_move(maze, c);
+    if (argc > 2 && is_challenge(argv[2])) {
+        path_values_t solution = solve(maze);
+        maze_state_t *copy = maze_copy(maze);
+        for (int i = 0; i < solution.size; ++i) {
+            maze_move(copy, solution.values[i]);
+            render_maze(copy);
+            sleep_ms(100);
+        }
+        maze_free(copy);
+        while (getch() != 'q');
+    } else {
         render_maze(maze);
-        if (maze_is_end(maze)) {
-            render_end_game();
-            break;
+        int c;
+        while (1) {
+            c = getch();
+            if (c == 'q') break;
+            char_to_move(maze, c);
+            render_maze(maze);
+            if (maze_is_end(maze)) {
+                render_end_game();
+                break;
+            }
         }
     }
-    maze_destroy(maze);
+
+    maze_free(maze);
 }
 
 void render_maze(maze_state_t *maze) {
