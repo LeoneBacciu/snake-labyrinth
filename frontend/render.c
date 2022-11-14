@@ -105,6 +105,14 @@ void render_maze(maze_t *maze) {
     int ratio = MIN(ratio_x, ratio_y);
     int rows_term = maze->rows * ratio, cols_term = maze->cols * ratio;
 
+    if(ratio == 0) {
+        attroff(-1);
+        attron(COLOR_PAIR(MCOLOR_DANGER));
+        printw("Terminal too small for this maze!");
+        refresh();
+        return;
+    }
+
     attr_t last_color = -1;
     for (int r = 0; r < rows_term; ++r) {
         for (int c = 0; c < cols_term; ++c) {
