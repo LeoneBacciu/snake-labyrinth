@@ -19,6 +19,7 @@ include_directories(.)
 include_directories(maze)
 
 add_executable(snake_labyrinth
+        containers/coord.c containers/coord.h
         containers/heap.c containers/heap.h
         containers/matrix.c containers/matrix.h
         containers/path.c containers/path.h

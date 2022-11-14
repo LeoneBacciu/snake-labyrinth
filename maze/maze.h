@@ -8,19 +8,7 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include "utils.h"
-
-/**
- * @struct coord_t
- * @brief Represents an x/y pair
- *
- * @var coord_t::x
- *  X coordinate
- * @var coord_t::y
- *  Y coordinate
- */
-typedef struct {
-    int x, y;
-} coord_t;
+#include "containers/coord.h"
 
 /**
  * @struct maze_t
