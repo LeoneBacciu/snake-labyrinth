@@ -10,30 +10,28 @@ void maze_destroy(maze_t *maze) {
     free(maze);
 }
 
-void maze_move(maze_t *maze, int dx, int dy) {
-    int nx = clamp(0, maze->pos.x + dx, maze->cols - 1);
-    int ny = clamp(0, maze->pos.y + dy, maze->rows - 1);
-    if (maze_can_go(maze, nx, ny)) {
-        maze->pos.x = nx;
-        maze->pos.y = ny;
+void maze_move(maze_t *maze, coord_t coord) {
+    coord_t n_coord = c_add(maze->pos, coord);
+    if (maze_can_go(maze, n_coord)) {
+        maze->pos = n_coord;
+        char c = mget(maze, n_coord);
+        if (c == '$' || c == '!') mset(maze, n_coord, ' ');
     }
-    char c = mget(maze, nx, ny);
-    if (c == '$' || c == '!') mset(maze, nx, ny, ' ');
 }
 
-void maze_resize(maze_t *maze, int x, int y) {
+void maze_resize(maze_t *maze, int cols, int rows) {
     free(maze->_m);
-    maze->cols = x;
-    maze->rows = y;
-    maze->_m = malloc(sizeof(char) * y * x);
+    maze->cols = cols;
+    maze->rows = rows;
+    maze->_m = malloc(sizeof(char) * rows * cols);
 }
 
-char mget(maze_t *maze, int x, int y) {
-    return maze->_m[y * (maze->cols) + x];
+char mget(maze_t *maze, coord_t coord) {
+    return maze->_m[coord.y * (maze->cols) + coord.x];
 }
 
-void mset(maze_t *maze, int x, int y, char v) {
-    maze->_m[y * (maze->cols) + x] = v;
+void mset(maze_t *maze, coord_t coord, char v) {
+    maze->_m[coord.y * (maze->cols) + coord.x] = v;
 }
 
 void maze_load(maze_t *maze, char *path) {
@@ -63,7 +61,7 @@ void maze_load(maze_t *maze, char *path) {
                 maze->end.x = c;
                 maze->end.y = r;
             }
-            mset(maze, c, r, line[c]);
+            mset(maze, c(c, r), line[c]);
         }
     }
 
@@ -72,9 +70,13 @@ void maze_load(maze_t *maze, char *path) {
 }
 
 bool maze_is_end(maze_t *maze) {
-    return (maze->pos.x == maze->end.x) && (maze->pos.y == maze->end.y);
+    return c_eq(maze->pos, maze->end);
 }
 
-bool maze_can_go(maze_t *maze, int x, int y) {
-    return (mget(maze, x, y) != '#');
+bool maze_valid_coord(maze_t *maze, coord_t coord) {
+    return coord.x >= 0 && coord.x < maze->cols && coord.y >= 0 && coord.y < maze->rows;
+}
+
+bool maze_can_go(maze_t *maze, coord_t coord) {
+    return maze_valid_coord(maze, coord) && mget(maze, coord) != '#';
 }

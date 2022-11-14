@@ -50,10 +50,10 @@ void render_destroy() {
 }
 
 void char_to_move(maze_t *maze, int c) {
-    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, 0, -1);
-    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, -1, 0);
-    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, 0, 1);
-    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, 1, 0);
+    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, c(0, -1));
+    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, c(-1, 0));
+    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, c(0, 1));
+    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, c(1, 0));
 }
 
 attr_t char_to_color(char ch) {
@@ -112,7 +112,7 @@ void render_maze(maze_t *maze) {
 
             char ch;
             if (maze->pos.x == nc && maze->pos.y == nr) ch = 'o';
-            else ch = mget(maze, nc, nr);
+            else ch = mget(maze, c(nc, nr));
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {

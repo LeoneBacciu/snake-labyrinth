@@ -52,34 +52,32 @@ void maze_destroy(maze_t *maze);
  * @param dx delta x movement
  * @param dy delta y movement
  */
-void maze_move(maze_t *maze, int dx, int dy);
+void maze_move(maze_t *maze, coord_t coord);
 
 /**
  * @brief Resizes the maze by allocating the necessary memory
  * @attention This erases the previous maze
  * @param maze
- * @param x number of rows
- * @param y number of columns
+ * @param cols number of rows
+ * @param rows number of columns
  */
-void maze_resize(maze_t *maze, int x, int y);
+void maze_resize(maze_t *maze, int cols, int rows);
 
 /**
- * @brief Gets the value in position x/y
+ * @brief Gets the value in position coord
  * @param maze
- * @param x
- * @param y
+ * @param coord
  * @return the char at that position
  */
-char mget(maze_t *maze, int x, int y);
+char mget(maze_t *maze, coord_t coord);
 
 /**
- * @brief Sets the value in position x/y
+ * @brief Sets the value in position coord
  * @param maze
- * @param x
- * @param y
+ * @param coord
  * @param v the new value
  */
-void mset(maze_t *maze, int x, int y, char v);
+void mset(maze_t *maze, coord_t coord, char v);
 
 /**
  * @brief Loads a maze from a file
@@ -89,11 +87,24 @@ void mset(maze_t *maze, int x, int y, char v);
 void maze_load(maze_t *maze, char *path);
 
 /**
+ * @brief Checks player reached end
+ * @param maze
+ * @return false if pos == end, else true
+ */
+bool maze_is_end(maze_t *maze);
+
+/**
+ * @brief Checks if coord is valid in this maze
+ * @param maze
+ * @param coord
+ * @return true if coord is possible
+ */
+bool maze_valid_coord(maze_t *maze, coord_t coord);
+
+/**
  * @brief Checks if a cell is free
  * @param maze
- * @param x
- * @param y
- * @return \a false if the cell contains # else true
+ * @param coord
+ * @return false if the cell contains # else true
  */
-bool maze_can_go(maze_t *maze, int x, int y);
-bool maze_is_end (maze_t *maze);
+bool maze_can_go(maze_t *maze, coord_t coord);
