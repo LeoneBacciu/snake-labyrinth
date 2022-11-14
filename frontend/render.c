@@ -50,10 +50,10 @@ void render_destroy() {
 }
 
 void char_to_move(maze_t *maze, int c) {
-    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, c(0, -1));
-    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, c(-1, 0));
-    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, c(0, 1));
-    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, c(1, 0));
+    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, movements[UP]);
+    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, movements[LEFT]);
+    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, movements[DOWN]);
+    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, movements[RIGHT]);
 }
 
 attr_t char_to_color(char ch) {

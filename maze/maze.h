@@ -10,6 +10,16 @@
 #include "utils.h"
 #include "containers/coord.h"
 
+#define RIGHT 0 ///< RIGHT direction encoding
+#define UP 1    ///< UP direction encoding
+#define LEFT 2  ///< LEFT direction encoding
+#define DOWN 3  ///< DOWN direction encoding
+
+/**
+ * @brief List of 4 possible movements RIGHT, UP, LEFT, DOWN
+ */
+extern const coord_t movements[];
+
 /**
  * @struct maze_t
  * @brief Represents a maze
@@ -49,8 +59,7 @@ void maze_destroy(maze_t *maze);
 /**
  * @brief Moves the current position if possible
  * @param maze
- * @param dx delta x movement
- * @param dy delta y movement
+ * @param coord
  */
 void maze_move(maze_t *maze, coord_t coord);
 

@@ -1,5 +1,7 @@
 #include "maze.h"
 
+const coord_t movements[] = {c(1, 0), c(0, -1), c(-1, 0), c(0, 1)};
+
 maze_t *maze_create() {
     maze_t *maze;
     maze = malloc(sizeof(maze_t));
