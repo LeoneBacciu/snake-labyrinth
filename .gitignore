@@ -1,6 +1,5 @@
 /cmake-build-debug/
 /cmake-build-release/
-.vscode
-.idea
-main
+/.vscode/
+/.idea/
 /docs/
