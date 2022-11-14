@@ -1,6 +1,6 @@
 /**
  * @file heap.h
- * @brief An implementation of a Min Heap DS
+ * @brief Max Heap DS
  */
 
 #pragma once
@@ -11,7 +11,7 @@
 
 /**
  * @struct heap_node_t
- * @brief A node of a Min Heap
+ * @brief A node of a Max Heap
  *
  * @var heap_node_t::key
  *  The sorting key
@@ -25,7 +25,7 @@ typedef struct {
 
 /**
  * @struct heap_t
- * @brief Min Heap DS
+ * @brief Max Heap DS
  *
  * @var heap_t::cap
  *  Capacity of the Heap
@@ -43,9 +43,9 @@ typedef struct {
 } heap_t;
 
 /**
- * @brief Creates a Min Heap
+ * @brief Creates a Max Heap
  * @param cap initial capacity of the h
- * @return pointer to a new Min Heap
+ * @return pointer to a new Max Heap
  */
 heap_t *heap_create(size_t cap);
 
@@ -74,14 +74,14 @@ void heap_insert_node(heap_t *heap, heap_node_t node);
 void *heap_extract(heap_t *heap);
 
 /**
- * @brief Changes the capacity of the Min Heap (only if bigger)
+ * @brief Changes the capacity of the Max Heap (only if bigger)
  * @param heap
  * @param cap new capacity
  */
 void heap_resize(heap_t *heap, size_t cap);
 
 /**
- * @brief Checks if the Min Heap is empty
+ * @brief Checks if the Max Heap is empty
  * @param heap
  * @return true if the Heap is empty, else false
  */
