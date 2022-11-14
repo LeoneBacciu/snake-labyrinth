@@ -27,6 +27,8 @@ path_t *path_add(path_t *path, int value) {
 }
 
 path_values_t path_values(path_t *path) {
+    if (path == NULL) return (path_values_t) {0, NULL};
+
     int *arr = calloc(path->size, sizeof(int));
     path_t *node = path;
     for (size_t i = path->size; i > 0; --i) {

@@ -2,41 +2,56 @@
 
 const coord_t movements[] = {c(1, 0), c(0, -1), c(-1, 0), c(0, 1)};
 
-maze_t *maze_create() {
-    maze_t *maze;
-    maze = malloc(sizeof(maze_t));
+const char movement_to_char[] = {'E', 'N', 'W', 'S'};
+
+maze_state_t *maze_create(int cols, int rows) {
+    maze_state_t *maze = malloc(sizeof(maze_state_t));
+    maze->matrix = matrix_create(cols, rows, ' ');
+    maze->pos = maze->end = c(0, 0);
+    maze->coins = maze->steps = 0;
+    maze->path = path_create();
     return maze;
 }
 
-void maze_destroy(maze_t *maze) {
+void maze_destroy(maze_state_t *maze) {
     free(maze);
 }
 
-void maze_move(maze_t *maze, coord_t coord) {
-    coord_t n_coord = c_add(maze->pos, coord);
+maze_state_t *maze_copy(maze_state_t *maze) {
+    maze_state_t *n_maze = malloc(sizeof(maze_state_t));
+    memcpy(n_maze, maze, sizeof(maze_state_t));
+    n_maze->matrix = matrix_copy(maze->matrix);
+    return n_maze;
+}
+
+void maze_move(maze_state_t *maze, int direction) {
+    coord_t n_coord = c_add(maze->pos, movements[direction]);
     if (maze_can_go(maze, n_coord)) {
         maze->pos = n_coord;
-        char c = mget(maze, n_coord);
-        if (c == '$' || c == '!') mset(maze, n_coord, ' ');
+        maze->steps += 1;
+        maze->path = path_add(maze->path, direction);
+        char ch = maze_get(maze, n_coord);
+        if (ch == '$') maze->coins += 1;
+        if (ch == '!') maze->coins /= 2;
+        maze_set(maze, n_coord, ' ');
     }
 }
 
-void maze_resize(maze_t *maze, int cols, int rows) {
-    free(maze->_m);
-    maze->cols = cols;
-    maze->rows = rows;
-    maze->_m = malloc(sizeof(char) * rows * cols);
+maze_state_t *maze_copy_move(maze_state_t *maze, int direction) {
+    maze_state_t *n_maze = maze_copy(maze);
+    maze_move(n_maze, direction);
+    return n_maze;
 }
 
-char mget(maze_t *maze, coord_t coord) {
-    return maze->_m[coord.y * (maze->cols) + coord.x];
+char maze_get(maze_state_t *maze, coord_t coord) {
+    return (char) matrix_get(maze->matrix, cx(coord));
 }
 
-void mset(maze_t *maze, coord_t coord, char v) {
-    maze->_m[coord.y * (maze->cols) + coord.x] = v;
+void maze_set(maze_state_t *maze, coord_t coord, char v) {
+    matrix_set(maze->matrix, cx(coord), v);
 }
 
-void maze_load(maze_t *maze, char *path) {
+maze_state_t *maze_load_file(char *path) {
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
@@ -47,13 +62,13 @@ void maze_load(maze_t *maze, char *path) {
         exit(EXIT_FAILURE);
     }
 
-    int x, y;
-    fscanf(fp, "%d %d\n", &x, &y);
-    maze_resize(maze, x, y);
+    int cols, rows;
+    fscanf(fp, "%d %d\n", &cols, &rows); // NOLINT(cert-err34-c)
+    maze_state_t *maze = maze_create(cols, rows);
 
-    for (int r = 0; r < y; ++r) {
+    for (int r = 0; r < rows; ++r) {
         getline(&line, &len, fp);
-        for (int c = 0; c < x; ++c) {
+        for (int c = 0; c < cols; ++c) {
             if (line[c] == 'o') {
                 maze->pos.x = c;
                 maze->pos.y = r;
@@ -63,22 +78,55 @@ void maze_load(maze_t *maze, char *path) {
                 maze->end.x = c;
                 maze->end.y = r;
             }
-            mset(maze, c(c, r), line[c]);
+            maze_set(maze, c(c, r), line[c]);
         }
     }
 
     fclose(fp);
     if (line) free(line);
+    return maze;
 }
 
-bool maze_is_end(maze_t *maze) {
+maze_state_t *maze_load_stdin() {
+    char *line = NULL;
+    size_t len = 0;
+
+    int cols, rows;
+    scanf("%d %d\n", &cols, &rows); // NOLINT(cert-err34-c)
+    maze_state_t *maze = maze_create(cols, rows);
+
+    for (int r = 0; r < rows; ++r) {
+        getline(&line, &len, stdin);
+        for (int c = 0; c < cols; ++c) {
+            if (line[c] == 'o') {
+                maze->pos.x = c;
+                maze->pos.y = r;
+                line[c] = ' ';
+            }
+            if (line[c] == '_') {
+                maze->end.x = c;
+                maze->end.y = r;
+            }
+            maze_set(maze, c(c, r), line[c]);
+        }
+    }
+
+    if (line) free(line);
+    return maze;
+}
+
+bool maze_is_end(maze_state_t *maze) {
     return c_eq(maze->pos, maze->end);
 }
 
-bool maze_valid_coord(maze_t *maze, coord_t coord) {
-    return coord.x >= 0 && coord.x < maze->cols && coord.y >= 0 && coord.y < maze->rows;
+bool maze_valid_coord(maze_state_t *maze, coord_t coord) {
+    return coord.x >= 0 && coord.x < maze->matrix->cols && coord.y >= 0 && coord.y < maze->matrix->rows;
 }
 
-bool maze_can_go(maze_t *maze, coord_t coord) {
-    return maze_valid_coord(maze, coord) && mget(maze, coord) != '#';
+bool maze_can_go(maze_state_t *maze, coord_t coord) {
+    return maze_valid_coord(maze, coord) && maze_get(maze, coord) != '#';
+}
+
+int maze_score(maze_state_t *maze) {
+    return maze->coins * 10 - maze->steps;
 }

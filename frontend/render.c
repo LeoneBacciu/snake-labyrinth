@@ -44,16 +44,16 @@ void render_init() {
 }
 
 void render_destroy() {
-    //clear();
+    attroff(-1);
     curs_set(1);
     endwin();
 }
 
-void char_to_move(maze_t *maze, int c) {
-    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, movements[UP]);
-    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, movements[LEFT]);
-    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, movements[DOWN]);
-    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, movements[RIGHT]);
+void char_to_move(maze_state_t *maze, int c) {
+    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, UP);
+    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, LEFT);
+    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, DOWN);
+    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, RIGHT);
 }
 
 attr_t char_to_color(char ch) {
@@ -79,9 +79,10 @@ char char_to_display(char ch) {
 }
 
 void render_loop(int argc, char **argv) {
-    maze_t *maze = maze_create();
+    maze_state_t *maze;
 
-    maze_load(maze, argv[1]);
+    if (argc > 1) maze = maze_load_file(argv[1]);
+    else exit(EXIT_FAILURE);
 
     render_maze(maze);
     int c;
@@ -98,14 +99,18 @@ void render_loop(int argc, char **argv) {
     maze_destroy(maze);
 }
 
-void render_maze(maze_t *maze) {
+void render_maze(maze_state_t *maze) {
     clear();
 
-    int ratio_x = COLS / maze->cols, ratio_y = LINES / maze->rows;
-    int ratio = MIN(ratio_x, ratio_y);
-    int rows_term = maze->rows * ratio, cols_term = maze->cols * ratio;
+    attroff(-1);
+    attron(COLOR_PAIR(MCOLOR_DEFAULT));
+    printw("Score: %d", maze_score(maze)); //TODO: make this look better
 
-    if(ratio == 0) {
+    int ratio_x = COLS / (int) maze->matrix->cols, ratio_y = LINES / (int) maze->matrix->rows;
+    int ratio = MIN(ratio_x, ratio_y);
+    int rows_term = (int) maze->matrix->rows * ratio, cols_term = (int) maze->matrix->cols * ratio;
+
+    if (ratio == 0) {
         attroff(-1);
         attron(COLOR_PAIR(MCOLOR_DANGER));
         printw("Terminal too small for this maze!");
@@ -120,7 +125,7 @@ void render_maze(maze_t *maze) {
 
             char ch;
             if (maze->pos.x == nc && maze->pos.y == nr) ch = 'o';
-            else ch = mget(maze, c(nc, nr));
+            else ch = maze_get(maze, c(nc, nr));
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {
@@ -146,4 +151,6 @@ void render_end_game() {
         char ch = getch();
         if (ch == 'q' || ch == 'Q') break;
     }
+
+    //TODO: add end score display
 }

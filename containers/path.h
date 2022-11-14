@@ -29,7 +29,7 @@ struct path_t {
 };
 
 struct path_t;
-typedef struct path_t path_t;
+typedef struct path_t path_t; ///< @private
 
 /**
  * @struct path_values_t

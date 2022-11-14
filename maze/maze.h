@@ -9,6 +9,8 @@
 #include <ncurses.h>
 #include "utils.h"
 #include "containers/coord.h"
+#include "containers/matrix.h"
+#include "containers/path.h"
 
 #define RIGHT 0 ///< RIGHT direction encoding
 #define UP 1    ///< UP direction encoding
@@ -21,56 +23,71 @@
 extern const coord_t movements[];
 
 /**
- * @struct maze_t
+ * @brief List of translations for movements
+ * RIGHT -> E
+ * UP -> N
+ * LEFT -> W
+ * DOWN -> S
+ */
+extern const char movement_to_char[];
+
+/**
+ * @struct maze_state_t
  * @brief Represents a maze
  *
- * @var maze_t::_m
- *  The internal representation of the maze
- *  @attention Do not use directly
- *  @see mget
- *  @see mset
- * @var maze_t::rows
- *  Number of rows
- * @var maze_t::cols
- *  Number of columns
- * @var maze_t::pos
+ * @var maze_state_t::matrix
+ *  Matrix containing maze cells
+ * @var maze_state_t::pos
  *  Current position of player
- * @var maze_t::end
+ * @var maze_state_t::end
  *  Position of exit
+ * @var maze_state_t::coins
+ *  Number of coins reached so far
+ * @var maze_state_t::steps
+ *  Number of steps done so far
+ * @var maze_state_t::path
+ *  Path of game
  */
 typedef struct {
-    char *_m;
-    int rows, cols;
+    matrix_t *matrix;
     coord_t pos, end;
-} maze_t;
+    int coins, steps;
+    path_t *path;
+} maze_state_t;
 
 /**
  * @brief Generates an empty maze
- * @return maze_t*
+ * @return maze_state_t*
  */
-maze_t *maze_create();
+maze_state_t *maze_create(int cols, int rows);
 
 /**
  * @brief Frees the memory of a maze
  * @param maze
  */
-void maze_destroy(maze_t *maze);
+void maze_destroy(maze_state_t *maze);
+
+/**
+ * @brief Creates a copy of the given maze
+ * @param maze
+ * @return maze_state_t*
+ */
+maze_state_t *maze_copy(maze_state_t *maze);
 
 /**
  * @brief Moves the current position if possible
  * @param maze
- * @param coord
+ * @param direction one of RIGHT, UP, LEFT, DOWN
  */
-void maze_move(maze_t *maze, coord_t coord);
+void maze_move(maze_state_t *maze, int direction);
 
 /**
- * @brief Resizes the maze by allocating the necessary memory
- * @attention This erases the previous maze
+ * @brief Creates a copy of the maze and moves the position in the new one
  * @param maze
- * @param cols number of rows
- * @param rows number of columns
+ * @param direction
+ * @return maze_state_t*
  */
-void maze_resize(maze_t *maze, int cols, int rows);
+maze_state_t *maze_copy_move(maze_state_t *maze, int direction);
 
 /**
  * @brief Gets the value in position coord
@@ -78,7 +95,7 @@ void maze_resize(maze_t *maze, int cols, int rows);
  * @param coord
  * @return the char at that position
  */
-char mget(maze_t *maze, coord_t coord);
+char maze_get(maze_state_t *maze, coord_t coord);
 
 /**
  * @brief Sets the value in position coord
@@ -86,21 +103,27 @@ char mget(maze_t *maze, coord_t coord);
  * @param coord
  * @param v the new value
  */
-void mset(maze_t *maze, coord_t coord, char v);
+void maze_set(maze_state_t *maze, coord_t coord, char v);
 
 /**
  * @brief Loads a maze from a file
- * @param maze
- * @param path the path of the file
+ * @param path
+ * @return maze_state_t*
  */
-void maze_load(maze_t *maze, char *path);
+maze_state_t *maze_load_file(char *path);
+
+/**
+ * @brief Loads a maze from stdin
+ * @return maze_state_t*
+ */
+maze_state_t *maze_load_stdin();
 
 /**
  * @brief Checks player reached end
  * @param maze
  * @return false if pos == end, else true
  */
-bool maze_is_end(maze_t *maze);
+bool maze_is_end(maze_state_t *maze);
 
 /**
  * @brief Checks if coord is valid in this maze
@@ -108,7 +131,7 @@ bool maze_is_end(maze_t *maze);
  * @param coord
  * @return true if coord is possible
  */
-bool maze_valid_coord(maze_t *maze, coord_t coord);
+bool maze_valid_coord(maze_state_t *maze, coord_t coord);
 
 /**
  * @brief Checks if a cell is free
@@ -116,4 +139,11 @@ bool maze_valid_coord(maze_t *maze, coord_t coord);
  * @param coord
  * @return false if the cell contains # else true
  */
-bool maze_can_go(maze_t *maze, coord_t coord);
+bool maze_can_go(maze_state_t *maze, coord_t coord);
+
+/**
+ * @brief Computes the score at the current state
+ * @param maze
+ * @return score
+ */
+int maze_score(maze_state_t *maze);
