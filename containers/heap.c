@@ -60,10 +60,8 @@ void *heap_extract(heap_t *heap) {
 
 void heap_resize(heap_t *heap, size_t cap) {
     if (cap <= heap->cap) return;
-    heap_node_t *new = calloc(cap, sizeof(heap_node_t));
-    memcpy(new, heap->h, heap->cap * sizeof(heap_node_t));
     heap->cap = cap;
-    heap->h = new;
+    heap->h = realloc(heap->h, cap * sizeof(heap_node_t));
 }
 
 bool heap_empty(heap_t *heap) {
