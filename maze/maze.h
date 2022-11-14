@@ -62,10 +62,16 @@ typedef struct {
 maze_state_t *maze_create(int cols, int rows);
 
 /**
- * @brief Frees the memory of a maze
+ * @brief Deletes all data
  * @param maze
  */
 void maze_destroy(maze_state_t *maze);
+
+/**
+ * @brief Frees the memory and deletes all data
+ * @param maze
+ */
+void maze_free(maze_state_t *maze);
 
 /**
  * @brief Creates a copy of the given maze

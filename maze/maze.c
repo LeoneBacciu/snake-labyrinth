@@ -14,6 +14,12 @@ maze_state_t *maze_create(int cols, int rows) {
 }
 
 void maze_destroy(maze_state_t *maze) {
+    matrix_free(maze->matrix);
+    path_free(maze->path);
+}
+
+void maze_free(maze_state_t *maze) {
+    maze_destroy(maze);
     free(maze);
 }
 
