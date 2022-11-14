@@ -7,8 +7,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-
-typedef long long ll;
+#include <memory.h>
 
 /**
  * @struct matrix_t
@@ -26,7 +25,7 @@ typedef long long ll;
  */
 typedef struct {
     size_t rows, cols;
-    ll *m;
+    int *m;
 } matrix_t;
 
 /**
@@ -36,7 +35,7 @@ typedef struct {
  * @param val default value of cells
  * @return pointer to the Matrix
  */
-matrix_t *matrix_create(size_t cols, size_t rows, ll val);
+matrix_t *matrix_create(size_t cols, size_t rows, int val);
 
 /**
  * @brief Gets a value from the Matrix
@@ -45,7 +44,7 @@ matrix_t *matrix_create(size_t cols, size_t rows, ll val);
  * @param y coordinate
  * @return value in x:y coordinate
  */
-ll matrix_get(matrix_t *matrix, size_t x, size_t y);
+int matrix_get(matrix_t *matrix, size_t x, size_t y);
 
 /**
  * @brief Sets a value in the Matrix
@@ -54,7 +53,7 @@ ll matrix_get(matrix_t *matrix, size_t x, size_t y);
  * @param y coordinate
  * @param v value to set
  */
-void matrix_set(matrix_t *matrix, size_t x, size_t y, ll v);
+void matrix_set(matrix_t *matrix, size_t x, size_t y, int v);
 
 /**
  * @brief Sets a value in the Matrix if it is smaller than the current
@@ -62,9 +61,9 @@ void matrix_set(matrix_t *matrix, size_t x, size_t y, ll v);
  * @param x coordinate
  * @param y coordinate
  * @param v value to test and set
- * @return the smallest value between v and the current
+ * @return true if the value was updated, else false
  */
-ll matrix_set_min(matrix_t *matrix, size_t x, size_t y, ll v);
+bool matrix_set_min(matrix_t *matrix, size_t x, size_t y, int v);
 
 /**
  * @brief Sets a value in the Matrix if it is bigger than the current
@@ -72,9 +71,16 @@ ll matrix_set_min(matrix_t *matrix, size_t x, size_t y, ll v);
  * @param x coordinate
  * @param y coordinate
  * @param v value to test and set
- * @return the biggest value between v and the current
+ * @return true if the value was updated, else false
  */
-ll matrix_set_max(matrix_t *matrix, size_t x, size_t y, ll v);
+bool matrix_set_max(matrix_t *matrix, size_t x, size_t y, int v);
+
+/**
+ * @brief Copies the matrix
+ * @param matrix
+ * @return a copy of the matrix
+ */
+matrix_t *matrix_copy(matrix_t *matrix);
 
 /**
  * @brief Frees the memory deleting all the data
