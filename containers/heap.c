@@ -13,7 +13,6 @@ void heap_insert(heap_t *heap, int key, void *value) {
     heap_insert_node(heap, node);
 }
 
-
 void heap_insert_node(heap_t *heap, heap_node_t node) {
     if (heap->size == heap->cap) heap_resize(heap, heap->cap * 2);
 
@@ -35,17 +34,26 @@ void *heap_extract(heap_t *heap) {
     void *value = root->value;
     heap_swap_nodes(root, heap_get(heap, --heap->size));
 
-    size_t i = 0;
-    heap_node_t *last = heap_get(heap, 0), *min = heap_get(heap, 0), *tmp;
-    do {
+    size_t i = 0, max_i = 0;
+    heap_node_t *last = heap_get(heap, 0), *max = heap_get(heap, 0);
+    while (1) {
         size_t l = heap_lchild_index(i), r = heap_rchild_index(i);
-        if (l < heap->size && (tmp = heap_get(heap, l))->key < min->key) min = tmp;
-        if (r < heap->size && (tmp = heap_get(heap, r))->key < min->key) min = tmp;
-        if (min != last) {
-            heap_swap_nodes(min, last);
-            last = min;
+        heap_node_t *lnode = heap_get(heap, l), *rnode = heap_get(heap, r);
+        if (r < heap->size && rnode->key >= max->key) {
+            max_i = r;
+            max = rnode;
         }
-    } while (min != last);
+        if (l < heap->size && lnode->key >= max->key) {
+            max_i = l;
+            max = lnode;
+        }
+
+        if (max == last) break;
+
+        heap_swap_nodes(max, last);
+        last = max;
+        i = max_i;
+    }
 
     return value;
 }
@@ -82,6 +90,10 @@ void heap_swap_nodes(heap_node_t *a, heap_node_t *b) {
     *b = tmp;
 }
 
-size_t heap_lchild_index(size_t i) { return (2 * i + 1); }
+size_t heap_lchild_index(size_t i) {
+    return (2 * i + 1);
+}
 
-size_t heap_rchild_index(size_t i) { return (2 * i + 2); }
+size_t heap_rchild_index(size_t i) {
+    return (2 * i + 2);
+}
