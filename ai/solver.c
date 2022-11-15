@@ -43,7 +43,7 @@ path_values_t solve(maze_state_t *maze) {
             maze_state_t *n_state = maze_copy_move(state, i);
 
             matrix_set_max(highest, cx(n_pos), score);
-            matrix_set_min(shortest, cx(n_pos), score);
+            matrix_set_min(shortest, cx(n_pos), state->steps);
 
             heap_insert(heap, maze_score(n_state), n_state);
         }
