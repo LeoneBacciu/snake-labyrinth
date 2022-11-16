@@ -19,3 +19,5 @@ void render_loop(int argc, char **argv);
 void render_maze(maze_state_t *maze);
 
 void render_end_game();
+
+int render_menu(char *title, int choices_count, char **choices);
