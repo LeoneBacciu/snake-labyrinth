@@ -11,6 +11,8 @@
 #define MCOLOR_END 4
 #define MCOLOR_WALL 5
 #define MCOLOR_WIN 6
+#define MCOLOR_NSCORE 7
+#define MCOLOR_PSCORE 8
 
 #define YOU_WON_LINES 5
 #define YOU_WON_COLS 43
@@ -44,6 +46,8 @@ void render_init() {
     init_pair(MCOLOR_END, COLOR_WHITE, COLOR_MAGENTA);
     init_pair(MCOLOR_WALL, COLOR_WHITE, COLOR_BLUE);
     init_pair(MCOLOR_WIN, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(MCOLOR_NSCORE, COLOR_RED, COLOR_BLACK);
+    init_pair(MCOLOR_PSCORE, COLOR_GREEN, COLOR_BLACK);
     clear();
 }
 
@@ -90,15 +94,11 @@ void render_loop(int argc, char **argv) {
     if (argc > 1) maze = maze_load_file(argv[1]);
     else exit(EXIT_FAILURE);
 
+    maze_state_t *backup = maze_copy(maze);
+
     if (argc > 2 && is_challenge(argv[2])) {
         path_values_t solution = solve(maze);
-        maze_state_t *copy = maze_copy(maze);
-        for (int i = 0; i < solution.size; ++i) {
-            maze_move(copy, solution.values[i]);
-            render_maze(copy);
-            sleep_ms(100);
-        }
-        maze_free(copy);
+        render_replay(maze, solution);
         while (getch() != 'q');
     } else {
         render_maze(maze);
@@ -109,7 +109,7 @@ void render_loop(int argc, char **argv) {
             char_to_move(maze, c);
             render_maze(maze);
             if (maze_is_end(maze)) {
-                render_end_game();
+                render_end_game(maze, backup);
                 break;
             }
         }
@@ -123,11 +123,15 @@ void render_maze(maze_state_t *maze) {
 
     attroff(-1);
     attron(COLOR_PAIR(MCOLOR_DEFAULT));
-    printw("Score: %d", maze_score(maze)); //TODO: make this look better
 
-    int ratio_x = COLS / (int) maze->matrix->cols, ratio_y = LINES / (int) maze->matrix->rows;
+    int ratio_x = COLS / (int) maze->matrix->cols, ratio_y = (LINES - 4) / (int) maze->matrix->rows;
     int ratio = MIN(ratio_x, ratio_y);
     int rows_term = (int) maze->matrix->rows * ratio, cols_term = (int) maze->matrix->cols * ratio;
+    if (maze_score(maze) < 0)
+        attron(COLOR_PAIR(MCOLOR_NSCORE));
+    else
+        attron(COLOR_PAIR(MCOLOR_PSCORE));
+    mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
 
     if (ratio == 0) {
         attroff(-1);
@@ -152,13 +156,14 @@ void render_maze(maze_state_t *maze) {
                 attron(color);
                 last_color = color;
             }
-            mvaddch(r, (COLS - cols_term) / 2 + c, char_to_display(ch));
+            mvaddch((LINES - rows_term) / 2 + r, (COLS - cols_term) / 2 + c, char_to_display(ch));
         }
     }
     refresh();
 }
 
-void render_end_game() {
+void render_end_game(maze_state_t *maze, maze_state_t *backup) {
+    __restart_endgame:
     clear();
     attroff(-1);
     attron(COLOR_PAIR(MCOLOR_WIN));
@@ -166,12 +171,22 @@ void render_end_game() {
         mvprintw((LINES / 2) - YOU_WON_LINES + i, (COLS - YOU_WON_COLS) / 2, "%s", you_won[i]);
     }
     mvprintw(LINES / 2 + 2, COLS / 2, "Press Q to exit game\n");
+    mvprintw(LINES / 2 + 4, COLS / 2, "Press R to watch replay\n");
+    if (maze_score(maze) < 0)
+        attron(COLOR_PAIR(MCOLOR_NSCORE));
+    else
+        attron(COLOR_PAIR(MCOLOR_PSCORE));
+    mvprintw(LINES / 2 + 6, COLS / 2, "Score: %s", to_roman(maze_score(maze)));
     while (1) {
         char ch = getch();
         if (ch == 'q' || ch == 'Q') break;
+        if (ch == 'r' || ch == 'R') {
+            render_replay(backup, path_values(maze->path));
+            goto __restart_endgame;
+        }
     }
 
-    //TODO: add end score display
+
 }
 
 int render_menu(char *title, int choices_count, char **choices) {
@@ -233,4 +248,14 @@ int render_menu(char *title, int choices_count, char **choices) {
     for (int i = 0; i < choices_count; ++i) free_item(items[i]);
 
     return current;
+}
+
+void render_replay(maze_state_t *maze, path_values_t path) {
+    maze_state_t *copy = maze_copy(maze);
+    for (int i = 0; i < path.size; ++i) {
+        maze_move(copy, path.values[i]);
+        render_maze(copy);
+        sleep_ms(100);
+    }
+    maze_free(copy);
 }

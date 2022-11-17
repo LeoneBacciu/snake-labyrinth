@@ -4,7 +4,9 @@
 #include <stdio.h>
 
 #ifdef WIN32
+
 #include <windows.h>
+
 #elif _POSIX_C_SOURCE >= 199309L
 
 #include <time.h>
@@ -20,3 +22,5 @@ int clamp(int low, int value, int high);
 
 
 void sleep_ms(int milliseconds);
+
+char *to_roman(int x);

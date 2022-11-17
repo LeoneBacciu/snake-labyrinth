@@ -18,6 +18,8 @@ void render_loop(int argc, char **argv);
 
 void render_maze(maze_state_t *maze);
 
-void render_end_game();
+void render_end_game(maze_state_t *maze, maze_state_t *backup);
 
 int render_menu(char *title, int choices_count, char **choices);
+
+void render_replay(maze_state_t *maze, path_values_t path);
