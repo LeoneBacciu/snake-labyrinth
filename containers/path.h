@@ -6,6 +6,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <memory.h>
 
 /**
  * @struct path_t
@@ -57,6 +58,13 @@ path_t *path_create();
  * @return {value}
  */
 path_t *path_element(int value);
+
+/**
+ * @brief Creates a copy of the path
+ * @param path
+ * @return path_t*
+ */
+path_t *path_copy(path_t *path);
 
 /**
  * @brief Creates a new Path from the one given and the value

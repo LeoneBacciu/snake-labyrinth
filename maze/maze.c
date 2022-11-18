@@ -30,6 +30,16 @@ maze_state_t *maze_copy(maze_state_t *maze) {
     return n_maze;
 }
 
+maze_state_t *maze_copy_initial(maze_state_t *maze) {
+    maze_state_t *n_maze = malloc(sizeof(maze_state_t));
+    memcpy(n_maze, maze, sizeof(maze_state_t));
+    n_maze->matrix = matrix_copy(maze->initial_matrix);
+    n_maze->pos = n_maze->start;
+    n_maze->coins = n_maze->steps = 0;
+    n_maze->path = NULL;
+    return n_maze;
+}
+
 void maze_move(maze_state_t *maze, int direction) {
     coord_t n_coord = c_add(maze->pos, movements[direction]);
     if (maze_can_go(maze, n_coord)) {
@@ -76,13 +86,12 @@ maze_state_t *maze_load_file(char *path) {
         getline(&line, &len, fp);
         for (int c = 0; c < cols; ++c) {
             if (line[c] == 'o') {
-                maze->pos.x = c;
-                maze->pos.y = r;
+                maze->pos = c(c, r);
+                maze->start = c(c, r);
                 line[c] = ' ';
             }
             if (line[c] == '_') {
-                maze->end.x = c;
-                maze->end.y = r;
+                maze->end = c(c, r);
             }
             maze_set(maze, c(c, r), line[c]);
         }
@@ -90,6 +99,7 @@ maze_state_t *maze_load_file(char *path) {
 
     fclose(fp);
     if (line) free(line);
+    maze->initial_matrix = matrix_copy(maze->matrix);
     return maze;
 }
 
@@ -105,19 +115,19 @@ maze_state_t *maze_load_stdin() {
         getline(&line, &len, stdin);
         for (int c = 0; c < cols; ++c) {
             if (line[c] == 'o') {
-                maze->pos.x = c;
-                maze->pos.y = r;
+                maze->pos = c(c, r);
+                maze->start = c(c, r);
                 line[c] = ' ';
             }
             if (line[c] == '_') {
-                maze->end.x = c;
-                maze->end.y = r;
+                maze->end = c(c, r);
             }
             maze_set(maze, c(c, r), line[c]);
         }
     }
 
     if (line) free(line);
+    maze->initial_matrix = matrix_copy(maze->matrix);
     return maze;
 }
 

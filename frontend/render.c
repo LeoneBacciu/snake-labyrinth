@@ -94,11 +94,9 @@ void render_loop(int argc, char **argv) {
     if (argc > 1) maze = maze_load_file(argv[1]);
     else exit(EXIT_FAILURE);
 
-    maze_state_t *backup = maze_copy(maze);
-
     if (argc > 2 && is_challenge(argv[2])) {
-        path_values_t solution = solve(maze);
-        render_replay(maze, solution);
+        maze_state_t *solution = solve(maze);
+        render_replay(solution);
         while (getch() != 'q');
     } else {
         render_maze(maze);
@@ -109,7 +107,7 @@ void render_loop(int argc, char **argv) {
             char_to_move(maze, c);
             render_maze(maze);
             if (maze_is_end(maze)) {
-                render_end_game(maze, backup);
+                render_end_game(maze);
                 break;
             }
         }
@@ -162,7 +160,7 @@ void render_maze(maze_state_t *maze) {
     refresh();
 }
 
-void render_end_game(maze_state_t *maze, maze_state_t *backup) {
+void render_end_game(maze_state_t *maze) {
     __restart_endgame:
     clear();
     attroff(-1);
@@ -181,7 +179,7 @@ void render_end_game(maze_state_t *maze, maze_state_t *backup) {
         char ch = getch();
         if (ch == 'q' || ch == 'Q') break;
         if (ch == 'r' || ch == 'R') {
-            render_replay(backup, path_values(maze->path));
+            render_replay(maze);
             goto __restart_endgame;
         }
     }
@@ -250,8 +248,9 @@ int render_menu(char *title, int choices_count, char **choices) {
     return current;
 }
 
-void render_replay(maze_state_t *maze, path_values_t path) {
-    maze_state_t *copy = maze_copy(maze);
+void render_replay(maze_state_t *maze) {
+    maze_state_t *copy = maze_copy_initial(maze);
+    path_values_t path = path_values(maze->path);
     for (int i = 0; i < path.size; ++i) {
         maze_move(copy, path.values[i]);
         render_maze(copy);

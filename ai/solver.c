@@ -1,7 +1,7 @@
 #include "solver.h"
 
-path_values_t solve(maze_state_t *maze) {
-    path_values_t best;
+maze_state_t *solve(maze_state_t *maze) {
+    maze_state_t *best = maze_copy(maze);
     int best_score = INT_MIN;
 
     int max_bonus = 0;
@@ -23,7 +23,7 @@ path_values_t solve(maze_state_t *maze) {
 
         if (maze_is_end(state)) {
             if (score > best_score) {
-                best = path_values(state->path);
+                best->path = path_copy(state->path);
                 best_score = score;
             }
             if (state->coins == max_bonus && !can_outperform(best_score, max_bonus, state)) break;

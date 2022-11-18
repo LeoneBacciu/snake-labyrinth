@@ -47,3 +47,18 @@ void path_free(path_t *path) {
         free(prev);
     }
 }
+
+path_t *path_copy(path_t *path) {
+    if (path == NULL) return NULL;
+
+    path_t *node = malloc(sizeof(path_t)), *next, *initial;
+    memcpy(node, path, sizeof(path_t));
+    initial = node;
+    while (node->prev != NULL) {
+        next = malloc(sizeof(path_t));
+        memcpy(next, node->prev, sizeof(path_t));
+        node->prev = next;
+        node = next;
+    }
+    return initial;
+}

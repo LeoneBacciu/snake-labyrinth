@@ -50,7 +50,8 @@ extern const char movement_to_char[];
  */
 typedef struct {
     matrix_t *matrix;
-    coord_t pos, end;
+    matrix_t *initial_matrix;
+    coord_t start, pos, end;
     int coins, steps;
     path_t *path;
 } maze_state_t;
@@ -79,6 +80,13 @@ void maze_free(maze_state_t *maze);
  * @return maze_state_t*
  */
 maze_state_t *maze_copy(maze_state_t *maze);
+
+/**
+ * @brief Creates a copy of the initial state of the given maze
+ * @param maze
+ * @return maze_state_t*
+ */
+maze_state_t *maze_copy_initial(maze_state_t *maze);
 
 /**
  * @brief Moves the current position if possible
