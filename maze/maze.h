@@ -161,3 +161,10 @@ bool maze_can_go(maze_state_t *maze, coord_t coord);
  * @return score
  */
 int maze_score(maze_state_t *maze);
+
+/**
+ * @brief Resets the state of the maze to n steps back
+ * @param maze
+ * @param steps number of steps
+ */
+void maze_rollback(maze_state_t *maze, int steps);
