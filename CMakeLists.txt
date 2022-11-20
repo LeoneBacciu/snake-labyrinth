@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.23)
 project(snake_labyrinth C)
 
 set(CMAKE_C_STANDARD 99)
+set(CURSES_NEED_NCURSES "TRUE")
+set(CURSES_NEED_WIDE "TRUE")
 
 if (WIN32)
     set(CURSES_INCLUDE_PATH "C:/MinGW/include/ncursesw")

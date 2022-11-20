@@ -138,7 +138,7 @@ void render_maze(maze_state_t *maze) {
 
     attron (COLOR_PAIR(MCOLOR_LIVES));
     for (int i = 0; i < maze->lives; ++i) {
-        mvprintw((LINES - rows_term) / 2 - 2, (COLS + cols_term) / 2 - i * 2 - 1, "%ls", L"<3");
+        mvprintw((LINES - rows_term) / 2 - 2, (COLS + cols_term) / 2 - i * 2 - 1, "%ls", L" \u2665");
     }
     if (maze->lives == 0) {
         mvprintw((LINES + rows_term) / 2, (COLS - cols_term) / 2, "No more lives!");
