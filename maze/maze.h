@@ -17,6 +17,8 @@
 #define LEFT 2  ///< LEFT direction encoding
 #define DOWN 3  ///< DOWN direction encoding
 
+#define MAX_LIVES 5 ///< Initial lives
+
 /**
  * @brief List of 4 possible movements RIGHT, UP, LEFT, DOWN
  */
@@ -45,6 +47,8 @@ extern const char movement_to_char[];
  *  Number of coins reached so far
  * @var maze_state_t::steps
  *  Number of steps done so far
+ * @var maze_state_t::lives
+ *  Number of lives remaining
  * @var maze_state_t::path
  *  Path of game
  */
@@ -52,7 +56,7 @@ typedef struct {
     matrix_t *matrix;
     matrix_t *initial_matrix;
     coord_t start, pos, end;
-    int coins, steps;
+    int coins, steps, lives;
     path_t *path;
 } maze_state_t;
 

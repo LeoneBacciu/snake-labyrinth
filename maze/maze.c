@@ -9,6 +9,7 @@ maze_state_t *maze_create(int cols, int rows) {
     maze->matrix = matrix_create(cols, rows, ' ');
     maze->pos = maze->end = c(0, 0);
     maze->coins = maze->steps = 0;
+    maze->lives = MAX_LIVES;
     maze->path = path_create();
     return maze;
 }
@@ -36,6 +37,7 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
     n_maze->matrix = matrix_copy(maze->initial_matrix);
     n_maze->pos = n_maze->start;
     n_maze->coins = n_maze->steps = 0;
+    n_maze->lives = MAX_LIVES;
     n_maze->path = NULL;
     return n_maze;
 }
@@ -146,3 +148,18 @@ bool maze_can_go(maze_state_t *maze, coord_t coord) {
 int maze_score(maze_state_t *maze) {
     return maze->coins * 10 - maze->steps;
 }
+
+
+void maze_rollback(maze_state_t *maze, int steps) {
+    if(maze->lives == 0) return;
+
+    maze_state_t *copy = maze_copy_initial(maze);
+    path_values_t path = path_values(maze->path);
+    for (int i = 0; i < (int) path.size - steps; ++i) {
+        maze_move(copy, path.values[i]);
+    }
+    copy->lives = maze->lives - 1;
+    *maze = *copy;
+}
+
+

@@ -13,6 +13,7 @@
 #define MCOLOR_WIN 6
 #define MCOLOR_NSCORE 7
 #define MCOLOR_PSCORE 8
+#define MCOLOR_LIVES 9
 
 #define YOU_WON_LINES 5
 #define YOU_WON_COLS 43
@@ -48,6 +49,7 @@ void render_init() {
     init_pair(MCOLOR_WIN, COLOR_YELLOW, COLOR_BLACK);
     init_pair(MCOLOR_NSCORE, COLOR_RED, COLOR_BLACK);
     init_pair(MCOLOR_PSCORE, COLOR_GREEN, COLOR_BLACK);
+    init_pair(MCOLOR_LIVES, COLOR_RED, COLOR_BLACK);
     clear();
 }
 
@@ -105,6 +107,9 @@ void render_loop(int argc, char **argv) {
             c = getch();
             if (c == 'q') break;
             char_to_move(maze, c);
+            if (c == 'u') {
+                maze_rollback(maze, 5);
+            }
             render_maze(maze);
             if (maze_is_end(maze)) {
                 render_end_game(maze);
@@ -122,7 +127,7 @@ void render_maze(maze_state_t *maze) {
     attroff(-1);
     attron(COLOR_PAIR(MCOLOR_DEFAULT));
 
-    int ratio_x = COLS / (int) maze->matrix->cols, ratio_y = (LINES - 4) / (int) maze->matrix->rows;
+    int ratio_x = COLS / (int) maze->matrix->cols, ratio_y = (LINES - 5) / (int) maze->matrix->rows;
     int ratio = MIN(ratio_x, ratio_y);
     int rows_term = (int) maze->matrix->rows * ratio, cols_term = (int) maze->matrix->cols * ratio;
     if (maze_score(maze) < 0)
@@ -130,6 +135,12 @@ void render_maze(maze_state_t *maze) {
     else
         attron(COLOR_PAIR(MCOLOR_PSCORE));
     mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
+
+    attron (COLOR_PAIR(MCOLOR_LIVES));
+    mvprintw((LINES - rows_term) / 2 - 2, (COLS + cols_term) / 2 - 8, "Lives: %d", maze->lives);
+    if (maze->lives == 0){
+        mvprintw((LINES + rows_term)/2, (COLS - cols_term) / 2, "No more lives!" );
+    }
 
     if (ratio == 0) {
         attroff(-1);
