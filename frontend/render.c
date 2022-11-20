@@ -137,9 +137,11 @@ void render_maze(maze_state_t *maze) {
     mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
 
     attron (COLOR_PAIR(MCOLOR_LIVES));
-    mvprintw((LINES - rows_term) / 2 - 2, (COLS + cols_term) / 2 - 8, "Lives: %d", maze->lives);
-    if (maze->lives == 0){
-        mvprintw((LINES + rows_term)/2, (COLS - cols_term) / 2, "No more lives!" );
+    for (int i = 0; i < maze->lives; ++i) {
+        mvprintw((LINES - rows_term) / 2 - 2, (COLS + cols_term) / 2 - i * 2 - 1, "%ls", L"<3");
+    }
+    if (maze->lives == 0) {
+        mvprintw((LINES + rows_term) / 2, (COLS - cols_term) / 2, "No more lives!");
     }
 
     if (ratio == 0) {

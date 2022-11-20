@@ -1,5 +1,7 @@
+#include <locale.h>
 #include <signal.h>
 #include "frontend/render.h"
+
 
 void signal_handler() {
     render_destroy();
@@ -7,6 +9,7 @@ void signal_handler() {
 }
 
 int main(int argc, char **argv) {
+    setlocale(LC_ALL, "");
     signal(SIGINT, signal_handler);
     render_init();
     render_loop(argc, argv);
