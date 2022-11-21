@@ -6,7 +6,6 @@
 #pragma once
 
 #include <stdlib.h>
-#include <ncurses.h>
 #include "utils.h"
 #include "containers/coord.h"
 #include "containers/matrix.h"

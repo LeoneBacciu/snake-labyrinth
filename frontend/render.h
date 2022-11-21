@@ -1,8 +1,10 @@
 #pragma once
 
-#include <ncurses.h>
+#define _XOPEN_SOURCE_EXTENDED
 #include <stdlib.h>
 #include "maze/maze.h"
+#include <ncurses.h>
+#include <menu.h>
 
 attr_t char_to_color(char ch);
 
