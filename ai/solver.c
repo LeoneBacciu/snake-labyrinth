@@ -4,6 +4,8 @@ maze_state_t *solve(maze_state_t *maze) {
     maze_state_t *best = maze_copy(maze);
     int best_score = INT_MIN;
 
+    int directions[] = {0, 1, 2, 3};
+
     int max_bonus = 0;
     for (int r = 0; r < maze->matrix->rows; ++r)
         for (int c = 0; c < maze->matrix->cols; ++c)
@@ -33,14 +35,16 @@ maze_state_t *solve(maze_state_t *maze) {
             continue;
         }
 
+        shuffle(directions, 4);
         for (int i = 0; i < 4; ++i) {
-            coord_t n_pos = c_add(state->pos, movements[i]);
+            int d = directions[i];
+            coord_t n_pos = c_add(state->pos, movements[d]);
 
             if (!maze_can_go(state, n_pos) ||
                 matrix_get(shortest, cx(n_pos)) <= state->steps && matrix_get(highest, cx(n_pos)) >= score)
                 continue;
 
-            maze_state_t *n_state = maze_copy_move(state, i);
+            maze_state_t *n_state = maze_copy_move(state, d);
 
             matrix_set_max(highest, cx(n_pos), score);
             matrix_set_min(shortest, cx(n_pos), state->steps);

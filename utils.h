@@ -3,6 +3,8 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
+#include <stdlib.h>
 
 #ifdef WIN32
 
@@ -25,3 +27,5 @@ int clamp(int low, int value, int high);
 void sleep_ms(int milliseconds);
 
 char *to_roman(int x);
+
+void shuffle(int *array, size_t n);
