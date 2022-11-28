@@ -171,3 +171,5 @@ int maze_score(maze_state_t *maze);
  * @param steps number of steps
  */
 void maze_rollback(maze_state_t *maze, int steps);
+
+maze_state_t *maze_simulate(maze_state_t *maze, path_values_t path);

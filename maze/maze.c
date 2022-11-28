@@ -153,13 +153,21 @@ int maze_score(maze_state_t *maze) {
 void maze_rollback(maze_state_t *maze, int steps) {
     if(maze->lives == 0) return;
 
-    maze_state_t *copy = maze_copy_initial(maze);
     path_values_t path = path_values(maze->path);
-    for (int i = 0; i < (int) path.size - steps; ++i) {
+    path.size -= steps;
+    maze_state_t *copy = maze_copy_initial(maze);
+    maze_state_t *result = maze_simulate(copy, path);
+    maze_free(copy);
+    result->lives = maze->lives - 1;
+    *maze = *result;
+}
+
+maze_state_t *maze_simulate(maze_state_t *maze, path_values_t path) {
+    maze_state_t *copy = maze_copy(maze);
+    for (int i = 0; i < (int) path.size; ++i) {
         maze_move(copy, path.values[i]);
     }
-    copy->lives = maze->lives - 1;
-    *maze = *copy;
+    return copy;
 }
 
 
