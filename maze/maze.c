@@ -8,7 +8,7 @@ maze_state_t *maze_create(int cols, int rows) {
     maze_state_t *maze = malloc(sizeof(maze_state_t));
     maze->matrix = matrix_create(cols, rows, ' ');
     maze->pos = maze->end = c(0, 0);
-    maze->coins = maze->steps = 0;
+    maze->coins = maze->steps = maze->drills = 0;
     maze->lives = MAX_LIVES;
     maze->path = path_create();
     return maze;
@@ -36,7 +36,7 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
     memcpy(n_maze, maze, sizeof(maze_state_t));
     n_maze->matrix = matrix_copy(maze->initial_matrix);
     n_maze->pos = n_maze->start;
-    n_maze->coins = n_maze->steps = 0;
+    n_maze->coins = n_maze->steps = n_maze->drills = 0;
     n_maze->lives = MAX_LIVES;
     n_maze->path = NULL;
     return n_maze;
@@ -51,6 +51,8 @@ void maze_move(maze_state_t *maze, int direction) {
         char ch = maze_get(maze, n_coord);
         if (ch == '$') maze->coins += 1;
         if (ch == '!') maze->coins /= 2;
+        if (ch == 'T') maze->drills += 3;
+        if (ch == '#') maze->drills -= 1;
         maze_set(maze, n_coord, ' ');
     }
 }
@@ -142,7 +144,7 @@ bool maze_valid_coord(maze_state_t *maze, coord_t coord) {
 }
 
 bool maze_can_go(maze_state_t *maze, coord_t coord) {
-    return maze_valid_coord(maze, coord) && maze_get(maze, coord) != '#';
+    return maze_valid_coord(maze, coord) && (maze->drills > 0 || maze_get(maze, coord) != '#');
 }
 
 int maze_score(maze_state_t *maze) {

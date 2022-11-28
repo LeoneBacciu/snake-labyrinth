@@ -48,6 +48,8 @@ extern const char movement_to_char[];
  *  Number of steps done so far
  * @var maze_state_t::lives
  *  Number of lives remaining
+ * @var maze_state_t::drills
+ *  Number of drills remaining
  * @var maze_state_t::path
  *  Path of game
  */
@@ -55,7 +57,7 @@ typedef struct {
     matrix_t *matrix;
     matrix_t *initial_matrix;
     coord_t start, pos, end;
-    int coins, steps, lives;
+    int coins, steps, lives, drills;
     path_t *path;
 } maze_state_t;
 
