@@ -13,6 +13,7 @@ maze_state_t *solve(maze_state_t *maze) {
 
     matrix_t *highest = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MIN);
     matrix_t *shortest = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MAX);
+    matrix_t *drillest = matrix_create(maze->matrix->cols, maze->matrix->rows, 0);
 
     heap_t *heap = heap_create(1000);
 
@@ -41,13 +42,16 @@ maze_state_t *solve(maze_state_t *maze) {
             coord_t n_pos = c_add(state->pos, movements[d]);
 
             if (!maze_can_go(state, n_pos) ||
-                matrix_get(shortest, cx(n_pos)) <= state->steps && matrix_get(highest, cx(n_pos)) >= score)
+                matrix_get(drillest, cx(n_pos)) <= state->drills &&
+                matrix_get(shortest, cx(n_pos)) <= state->steps &&
+                matrix_get(highest, cx(n_pos)) >= score)
                 continue;
 
             maze_state_t *n_state = maze_copy_move(state, d);
 
             matrix_set_max(highest, cx(n_pos), score);
             matrix_set_min(shortest, cx(n_pos), state->steps);
+            matrix_set_min(drillest, cx(n_pos), state->drills);
 
             heap_insert(heap, maze_score(n_state), n_state);
         }
