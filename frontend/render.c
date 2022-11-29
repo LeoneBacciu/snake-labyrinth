@@ -13,6 +13,8 @@
 #define MCOLOR_NSCORE 7
 #define MCOLOR_PSCORE 8
 #define MCOLOR_LIVES 9
+#define MCOLOR_DRILL 10
+#define MCOLOR_NDRILL 11
 
 #define YOU_WON_LINES 5
 #define YOU_WON_COLS 43
@@ -49,6 +51,8 @@ void render_init() {
     init_pair(MCOLOR_NSCORE, COLOR_RED, COLOR_BLACK);
     init_pair(MCOLOR_PSCORE, COLOR_GREEN, COLOR_BLACK);
     init_pair(MCOLOR_LIVES, COLOR_RED, COLOR_BLACK);
+    init_pair(MCOLOR_DRILL, COLOR_WHITE, COLOR_YELLOW);
+    init_pair(MCOLOR_NDRILL, COLOR_YELLOW, COLOR_BLACK);
     clear();
 }
 
@@ -79,13 +83,15 @@ attr_t char_to_color(char ch) {
             return COLOR_PAIR(MCOLOR_END);
         case '#':
             return COLOR_PAIR(MCOLOR_WALL);
+        case 'T':
+            return COLOR_PAIR(MCOLOR_DRILL);
         default:
             return COLOR_PAIR(MCOLOR_DEFAULT);
     }
 }
 
 char char_to_display(char ch) {
-    if (ch == '$' || ch == '!') return ch;
+    if (ch == '$' || ch == '!' || ch == 'T') return ch;
     return ' ';
 }
 
@@ -135,6 +141,8 @@ void render_maze(maze_state_t *maze) {
         attron(COLOR_PAIR(MCOLOR_PSCORE));
     mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
 
+    attron(COLOR_PAIR(MCOLOR_NDRILL));
+    mvprintw((LINES + rows_term) / 2 + 1, (COLS + cols_term) / 2 - 9, "Drills: %d", maze->drills);
     attron (COLOR_PAIR(MCOLOR_LIVES));
     for (int i = 0; i < maze->lives; ++i) {
 #ifdef _WIN32
@@ -145,7 +153,7 @@ void render_maze(maze_state_t *maze) {
 #endif
     }
     if (maze->lives == 0) {
-        mvprintw((LINES + rows_term) / 2, (COLS - cols_term) / 2, "No more lives!");
+        mvprintw((LINES + rows_term) / 2 + 1, (COLS - cols_term) / 2, "No more lives!");
     }
 
     if (ratio == 0) {
