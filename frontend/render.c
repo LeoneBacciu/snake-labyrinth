@@ -1,5 +1,6 @@
 #include "render.h"
 #include "ai/solver.h"
+#include "ai/rl/agent.h"
 
 #define is_challenge(s) (!strcmp(s, "--challenge"))
 
@@ -102,6 +103,8 @@ void render_loop(int argc, char **argv) {
     else exit(EXIT_FAILURE);
 
     if (argc > 2 && is_challenge(argv[2])) {
+//        solve_rl(maze);
+//        exit(0);
         maze_state_t *solution = solve(maze);
         render_replay(solution);
         while (getch() != 'q');
@@ -139,7 +142,8 @@ void render_maze(maze_state_t *maze) {
         attron(COLOR_PAIR(MCOLOR_NSCORE));
     else
         attron(COLOR_PAIR(MCOLOR_PSCORE));
-    mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
+//    mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
+    mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %d", maze_score(maze));
 
     attron(COLOR_PAIR(MCOLOR_NDRILL));
     mvprintw((LINES + rows_term) / 2 + 1, (COLS + cols_term) / 2 - 9, "Drills: %d", maze->drills);

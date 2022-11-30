@@ -1,0 +1,104 @@
+#include <float.h>
+#include "q_table.h"
+
+size_t q_table_index(q_table_t *table, state_t state, action_t action) {
+    size_t py = state.coord.y * table->nx * table->nd * table->na;
+    size_t px = state.coord.x * table->nd * table->na;
+    size_t pd = state.depth * table->na;
+    size_t pa = action;
+    return py + px + pd + pa;
+}
+
+q_table_t *
+q_table_create(size_t nx, size_t ny, size_t nd, size_t na, double lr, double gamma, maze_state_t *environment) {
+    q_table_t *q_table = malloc(sizeof(q_table_t));
+    q_table->nx = nx;
+    q_table->ny = ny;
+    q_table->nd = nd;
+    q_table->na = na;
+    q_table->lr = lr;
+    q_table->gamma = gamma;
+    q_table->table = calloc(nx * ny * nd * na, sizeof(reward_t));
+    for (int i = 0; i < nx * ny * nd * na; ++i) {
+        q_table->table[i] = Q_MIN;
+    }
+    q_table->environment = environment;
+    return q_table;
+}
+
+reward_t s_value(q_table_t *table, state_t state) {
+    if (state.depth > 0) return -1;
+    if (c_eq(table->environment->end, state.coord)) return 0;
+    char cell = maze_get(table->environment, state.coord);
+    if (cell == '$') return 10;
+    if (cell == '!') return -10;
+//    if (cell == 'T') return 0;
+    if (cell == '#') return -100;
+    return -1;
+}
+
+reward_t q_value_get(q_table_t *table, state_t state, action_t action) {
+    return table->table[q_table_index(table, state, action)];
+}
+
+reward_t q_value_max(q_table_t *table, state_t state) {
+    reward_t mx = Q_MIN;
+    for (action_t action = 0; action < 4; ++action) {
+        reward_t reward = table->table[q_table_index(table, state, action)];
+        if (mx < reward) mx = reward;
+    }
+    return mx;
+}
+
+action_t q_action_max(q_table_t *table, state_t state) {
+    action_t mxa = LEFT;
+    reward_t mx = Q_MIN;
+    for (action_t action = 0; action < 4; ++action) {
+        reward_t reward = table->table[q_table_index(table, state, action)];
+        if (mx < reward) {
+            mx = reward;
+            mxa = action;
+        }
+    }
+    return mxa;
+}
+
+void q_value_set(q_table_t *table, state_t state, action_t action, reward_t q_value) {
+    table->table[q_table_index(table, state, action)] = MAX(Q_MIN, q_value);
+}
+
+void q_update(q_table_t *table, state_t state, state_t n_state, action_t action, reward_t reward) {
+    reward_t left = q_value_get(table, state, action);
+
+    reward_t q_max = q_value_max(table, n_state);
+
+    reward_t right = (reward + table->gamma * q_max);
+
+    q_value_set(table, state, action, (1 - table->lr) * left + (table->lr) * right);
+}
+
+void q_print(q_table_t *table) {
+    for (int dd = 0; dd < table->nd; ++dd) {
+        printf("\nDepth: %d\n", dd);
+        for (int yy = 0; yy < table->ny; ++yy) {
+            for (int xx = 0; xx < table->nx; ++xx) {
+                state_t st = {c(xx, yy), dd};
+                printf("%04.0f ", q_value_max(table, st));
+            }
+            printf("\n");
+        }
+    }
+    for (int dd = 0; dd < table->nd; ++dd) {
+        printf("\nDepth: %d\n", dd);
+        for (int yy = 0; yy < table->ny; ++yy) {
+            for (int xx = 0; xx < table->nx; ++xx) {
+                state_t st = {c(xx, yy), dd};
+                if (q_value_max(table, st) == Q_MIN) printf("0");
+                else printf("%c", movement_to_char[q_action_max(table, st)]);
+            }
+            printf("\n");
+        }
+    }
+}
+
+

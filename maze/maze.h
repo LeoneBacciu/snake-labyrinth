@@ -11,10 +11,9 @@
 #include "containers/matrix.h"
 #include "containers/path.h"
 
-#define RIGHT 0 ///< RIGHT direction encoding
-#define UP 1    ///< UP direction encoding
-#define LEFT 2  ///< LEFT direction encoding
-#define DOWN 3  ///< DOWN direction encoding
+typedef enum {
+    RIGHT = 0, UP = 1, LEFT = 2, DOWN = 3
+} direction_t;
 
 #define MAX_LIVES 5 ///< Initial lives
 
@@ -98,7 +97,7 @@ maze_state_t *maze_copy_initial(maze_state_t *maze);
  * @param maze
  * @param direction one of RIGHT, UP, LEFT, DOWN
  */
-void maze_move(maze_state_t *maze, int direction);
+void maze_move(maze_state_t *maze, direction_t direction);
 
 /**
  * @brief Creates a copy of the maze and moves the position in the new one
@@ -106,7 +105,7 @@ void maze_move(maze_state_t *maze, int direction);
  * @param direction
  * @return maze_state_t*
  */
-maze_state_t *maze_copy_move(maze_state_t *maze, int direction);
+maze_state_t *maze_copy_move(maze_state_t *maze, direction_t direction);
 
 /**
  * @brief Gets the value in position coord

@@ -9,6 +9,7 @@ void signal_handler() {
 }
 
 int main(int argc, char **argv) {
+    srand(time(NULL));
     setlocale(LC_ALL, "");
     signal(SIGINT, signal_handler);
     render_init();

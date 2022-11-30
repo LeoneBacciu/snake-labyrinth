@@ -42,7 +42,7 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
     return n_maze;
 }
 
-void maze_move(maze_state_t *maze, int direction) {
+void maze_move(maze_state_t *maze, direction_t direction) {
     coord_t n_coord = c_add(maze->pos, movements[direction]);
     if (maze_can_go(maze, n_coord)) {
         maze->pos = n_coord;
@@ -57,7 +57,7 @@ void maze_move(maze_state_t *maze, int direction) {
     }
 }
 
-maze_state_t *maze_copy_move(maze_state_t *maze, int direction) {
+maze_state_t *maze_copy_move(maze_state_t *maze, direction_t direction) {
     maze_state_t *n_maze = maze_copy(maze);
     maze_move(n_maze, direction);
     return n_maze;
