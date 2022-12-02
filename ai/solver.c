@@ -6,10 +6,13 @@ maze_state_t *solve(maze_state_t *maze) {
 
     int directions[] = {0, 1, 2, 3};
 
-    int max_bonus = 0;
-    for (int r = 0; r < maze->matrix->rows; ++r)
-        for (int c = 0; c < maze->matrix->cols; ++c)
-            if (maze_get(maze, c(c, r))) max_bonus++;
+    int max_bonus = 0, max_drills = 0;
+    for (int r = 0; r < maze->matrix->rows; ++r) {
+        for (int c = 0; c < maze->matrix->cols; ++c) {
+            if (maze_get(maze, c(c, r)) == '$') max_bonus += 10;
+            if (maze_get(maze, c(c, r)) == 'T') max_drills += 3;
+        }
+    }
 
     matrix_t *highest = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MIN);
     matrix_t *shortest = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MAX);
@@ -29,7 +32,10 @@ maze_state_t *solve(maze_state_t *maze) {
                 best->path = path_copy(state->path);
                 best_score = score;
             }
-            if (state->coins == max_bonus && !can_outperform(best_score, max_bonus, state)) break;
+            if (state->coins == max_bonus &&
+                state->drills == max_drills &&
+                !can_outperform(best_score, max_bonus, state))
+                break;
 
             maze_free(state);
 
@@ -42,7 +48,7 @@ maze_state_t *solve(maze_state_t *maze) {
             coord_t n_pos = c_add(state->pos, movements[d]);
 
             if (!maze_can_go(state, n_pos) ||
-                matrix_get(drillest, cx(n_pos)) <= state->drills &&
+                matrix_get(drillest, cx(n_pos)) >= state->drills &&
                 matrix_get(shortest, cx(n_pos)) <= state->steps &&
                 matrix_get(highest, cx(n_pos)) >= score)
                 continue;
@@ -51,7 +57,7 @@ maze_state_t *solve(maze_state_t *maze) {
 
             matrix_set_max(highest, cx(n_pos), score);
             matrix_set_min(shortest, cx(n_pos), state->steps);
-            matrix_set_min(drillest, cx(n_pos), state->drills);
+            matrix_set_max(drillest, cx(n_pos), state->drills);
 
             heap_insert(heap, maze_score(n_state), n_state);
         }
