@@ -1,6 +1,7 @@
 #include <locale.h>
 #include <signal.h>
 #include "frontend/render.h"
+#include "ai/random.h"
 
 
 void signal_handler() {
@@ -9,7 +10,7 @@ void signal_handler() {
 }
 
 int main(int argc, char **argv) {
-    srand(time(NULL));
+    random_init();
     setlocale(LC_ALL, "");
     signal(SIGINT, signal_handler);
     render_init();

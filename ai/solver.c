@@ -1,4 +1,5 @@
 #include "solver.h"
+#include "random.h"
 
 maze_state_t *solve(maze_state_t *maze) {
     maze_state_t *best = maze_copy(maze);
@@ -41,8 +42,8 @@ maze_state_t *solve(maze_state_t *maze) {
 
             continue;
         }
-        // TODO: Fix random
-        //shuffle(directions, 4);
+
+        random_shuffle(directions, 4);
         for (int i = 0; i < 4; ++i) {
             int d = directions[i];
             coord_t n_pos = c_add(state->pos, movements[d]);

@@ -15,7 +15,9 @@
 #include <time.h>
 
 #else
+
 #include <unistd.h>
+
 #endif
 
 #define MIN(a, b) (a<b? a : b)
@@ -23,9 +25,6 @@
 
 int clamp(int low, int value, int high);
 
-
 void sleep_ms(int milliseconds);
 
 char *to_roman(int x);
-
-void shuffle(int *array, size_t n);
