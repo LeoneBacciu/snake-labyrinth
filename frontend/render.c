@@ -105,8 +105,23 @@ void render_loop(int argc, char **argv) {
     if (argc > 2 && is_challenge(argv[2])) {
 //        solve_rl(maze);
 //        exit(0);
-        maze_state_t *solution = solve(maze);
-        render_replay(solution);
+
+        // TODO: rewrite better
+        maze_state_t *initial_solution = solve(maze);
+        maze_state_t *sim = maze_simulate(maze, path_values(initial_solution->path));
+        for (int i = 0; i < SOLVER_RUNS; ++i) {
+            maze_state_t *tmp = solve(maze);
+            maze_state_t *tmp_sim = maze_simulate(maze, path_values(tmp->path));
+            if (maze_score(sim) < maze_score(tmp_sim)) {
+                maze_free(sim);
+                sim = tmp_sim;
+            } else {
+                maze_free(tmp_sim);
+            }
+            maze_free(tmp);
+        }
+
+        render_replay(sim);
         while (getch() != 'q');
     } else {
         render_maze(maze);
