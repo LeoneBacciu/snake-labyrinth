@@ -1,12 +1,8 @@
 #pragma once
 
-#ifdef __WIN32
-#else
-
-#include <stdlib.h>
 #include <sys/time.h>
+#include <stdlib.h>
 
-#endif
 
 void random_init();
 
