@@ -122,6 +122,8 @@ void render_loop(int argc, char **argv) {
         }
 
         render_replay(sim);
+//        maze_state_t *sol = solve_rec(maze);
+//        render_replay(sol);
         while (getch() != 'q');
     } else {
         render_maze(maze);

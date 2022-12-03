@@ -77,29 +77,63 @@ bool can_outperform(int best_score, int max_bonus, maze_state_t *maze) {
  * non impiegando più di depth passi */
 
 typedef struct {
-
-    path_t *path;
     int score;
+    path_t *path;
 } solution_t;
 
 
 solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
+    if (depth == 0) return (solution_t) {INT_MIN, path_create()};
 
-    if (depth == 0) {
-        return (solution_t) {NULL, INT_MIN};
-    }
+    if(maze_is_end(maze)) return (solution_t) {maze_score(maze), path_copy(maze->path)};
+
+    solution_t final = {INT_MIN, path_create()};
+
     coord_t init_pos = maze->pos;
     int init_coins = maze->coins;
     int init_steps = maze->steps;
     int init_drills = maze->drills;
+    int init_score = maze_score(maze);
+
+    for (direction_t direction = 0; direction < 4; ++direction) {
+        coord_t n_pos = c_add(maze->pos, movements[direction]);
+
+        int prev_score = matrix_get(visited, cx(n_pos));
+
+        if (!maze_can_go(maze, n_pos) || prev_score > init_score) continue;
 
 
-    for (int i = 0; i < 4; ++i) {
+        maze->pos = n_pos;
+        maze->steps += 1;
+        maze->path = path_add(maze->path, direction);
+        char init_ch = maze_get(maze, n_pos);
+        if (init_ch == '$') maze->coins += 1;
+        if (init_ch == '!') maze->coins /= 2;
+        if (init_ch == 'T') maze->drills += 3;
+        if (init_ch == '#') maze->drills -= 1;
+        maze_set(maze, n_pos, ' ');
 
+        matrix_set(visited, cx(n_pos), init_score);
+
+
+        solution_t tmp = ciccioricorsione(maze, visited, depth - 1);
+        if (tmp.score > final.score) final = tmp;
+
+
+        maze->pos = init_pos;
+        maze->steps = init_steps;
+        maze->path = path_pop(maze->path);
+        maze->coins = init_coins;
+        maze->drills = init_drills;
+        maze_set(maze, n_pos, init_ch);
+
+        matrix_set(visited, cx(n_pos), prev_score);
     }
+    return final;
 }
 
 maze_state_t *solve_rec(maze_state_t *maze) {
-
-
+    matrix_t *visited = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MIN);
+    solution_t solution = ciccioricorsione(maze, visited, 20);
+    return maze_simulate(maze, path_values(solution.path));
 }
