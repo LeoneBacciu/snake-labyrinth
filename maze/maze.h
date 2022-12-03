@@ -97,13 +97,14 @@ maze_state_t *maze_copy_initial(maze_state_t *maze);
  * @param maze
  * @param direction one of RIGHT, UP, LEFT, DOWN
  */
-void maze_move(maze_state_t *maze, direction_t direction);
+bool maze_move(maze_state_t *maze, direction_t direction);
 
 /**
  * @brief Creates a copy of the maze and moves the position in the new one
  * @param maze
  * @param direction
  * @return maze_state_t*
+ * @return true if can_go else false
  */
 maze_state_t *maze_copy_move(maze_state_t *maze, direction_t direction);
 

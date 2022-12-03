@@ -72,3 +72,34 @@ maze_state_t *solve(maze_state_t *maze) {
 bool can_outperform(int best_score, int max_bonus, maze_state_t *maze) {
     return best_score < maze_score(maze) + (max_bonus - maze->coins) * 10;
 }
+
+/*ritorna il percorso migliore partendo da maze.pos, essendo stato nelle celle visited e
+ * non impiegando più di depth passi */
+
+typedef struct {
+
+    path_t *path;
+    int score;
+} solution_t;
+
+
+solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
+
+    if (depth == 0) {
+        return (solution_t) {NULL, INT_MIN};
+    }
+    coord_t init_pos = maze->pos;
+    int init_coins = maze->coins;
+    int init_steps = maze->steps;
+    int init_drills = maze->drills;
+
+
+    for (int i = 0; i < 4; ++i) {
+
+    }
+}
+
+maze_state_t *solve_rec(maze_state_t *maze) {
+
+
+}

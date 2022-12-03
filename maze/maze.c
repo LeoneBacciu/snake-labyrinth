@@ -42,19 +42,20 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
     return n_maze;
 }
 
-void maze_move(maze_state_t *maze, direction_t direction) {
+bool maze_move(maze_state_t *maze, direction_t direction) {
     coord_t n_coord = c_add(maze->pos, movements[direction]);
-    if (maze_can_go(maze, n_coord)) {
-        maze->pos = n_coord;
-        maze->steps += 1;
-        maze->path = path_add(maze->path, direction);
-        char ch = maze_get(maze, n_coord);
-        if (ch == '$') maze->coins += 1;
-        if (ch == '!') maze->coins /= 2;
-        if (ch == 'T') maze->drills += 3;
-        if (ch == '#') maze->drills -= 1;
-        maze_set(maze, n_coord, ' ');
-    }
+    if (!maze_can_go(maze, n_coord))
+        return false;
+    maze->pos = n_coord;
+    maze->steps += 1;
+    maze->path = path_add(maze->path, direction);
+    char ch = maze_get(maze, n_coord);
+    if (ch == '$') maze->coins += 1;
+    if (ch == '!') maze->coins /= 2;
+    if (ch == 'T') maze->drills += 3;
+    if (ch == '#') maze->drills -= 1;
+    maze_set(maze, n_coord, ' ');
+    return true;
 }
 
 maze_state_t *maze_copy_move(maze_state_t *maze, direction_t direction) {
@@ -153,7 +154,7 @@ int maze_score(maze_state_t *maze) {
 
 
 void maze_rollback(maze_state_t *maze, int steps) {
-    if(maze->lives == 0) return;
+    if (maze->lives == 0) return;
 
     path_values_t path = path_values(maze->path);
     path.size -= steps;
