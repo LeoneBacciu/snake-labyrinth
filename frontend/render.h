@@ -6,10 +6,6 @@
 #include <ncurses.h>
 #include <menu.h>
 
-attr_t char_to_color(char ch);
-
-char char_to_display(char ch);
-
 void char_to_move(maze_state_t *maze, int c);
 
 void render_init();

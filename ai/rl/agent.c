@@ -76,7 +76,7 @@ void solve_rl(maze_state_t *maze) {
 
 
     matrix_t *visited = matrix_create(maze->matrix->cols, maze->matrix->rows, 0);
-    state_t st = {maze->pos, 0};
+    state_t st = {maze->head, 0};
     while (!c_eq(st.coord, maze->end)) {
         maze_set(maze, st.coord, 'x');
         action_t action = q_action_max(table, st);

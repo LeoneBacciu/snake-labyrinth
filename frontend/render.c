@@ -70,7 +70,7 @@ void char_to_move(maze_state_t *maze, int c) {
     if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, RIGHT);
 }
 
-attr_t char_to_color(char ch) {
+attr_t char_to_color(int ch) {
     switch (ch) {
         case 'o':
             return COLOR_PAIR(MCOLOR_ME);
@@ -91,7 +91,7 @@ attr_t char_to_color(char ch) {
     }
 }
 
-char char_to_display(char ch) {
+char char_to_display(int ch) {
     if (ch == '$' || ch == '!' || ch == 'T') return ch;
     return ' ';
 }
@@ -190,9 +190,8 @@ void render_maze(maze_state_t *maze) {
         for (int c = 0; c < cols_term; ++c) {
             int nr = r / ratio, nc = c / ratio;
 
-            char ch;
-            if (maze->pos.x == nc && maze->pos.y == nr) ch = 'o';
-            else ch = maze_get(maze, c(nc, nr));
+            int ch = maze_get(maze, c(nc, nr));
+            if (ch >= TAIL_BASE) ch = 'o';
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {

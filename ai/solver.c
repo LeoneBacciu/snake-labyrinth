@@ -22,7 +22,7 @@ maze_state_t *solve(maze_state_t *maze) {
     heap_t *heap = heap_create(1000);
 
     heap_insert(heap, 0, maze_copy(maze));
-    matrix_set(highest, cx(maze->pos), 0);
+    matrix_set(highest, cx(maze->head), 0);
 
     while (!heap_empty(heap)) {
         maze_state_t *state = heap_extract(heap);
@@ -46,7 +46,7 @@ maze_state_t *solve(maze_state_t *maze) {
         random_shuffle(directions, 4);
         for (int i = 0; i < 4; ++i) {
             int d = directions[i];
-            coord_t n_pos = c_add(state->pos, movements[d]);
+            coord_t n_pos = c_add(state->head, movements[d]);
 
             if (!maze_can_go(state, n_pos) ||
                 matrix_get(drillest, cx(n_pos)) >= state->drills &&
@@ -73,7 +73,7 @@ bool can_outperform(int best_score, int max_bonus, maze_state_t *maze) {
     return best_score < maze_score(maze) + (max_bonus - maze->coins) * 10;
 }
 
-/*ritorna il percorso migliore partendo da maze.pos, essendo stato nelle celle visited e
+/*ritorna il percorso migliore partendo da maze.head, essendo stato nelle celle visited e
  * non impiegando più di depth passi */
 
 typedef struct {
@@ -85,25 +85,25 @@ typedef struct {
 solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
     if (depth == 0) return (solution_t) {INT_MIN, path_create()};
 
-    if(maze_is_end(maze)) return (solution_t) {maze_score(maze), path_copy(maze->path)};
+    if (maze_is_end(maze)) return (solution_t) {maze_score(maze), path_copy(maze->path)};
 
     solution_t final = {INT_MIN, path_create()};
 
-    coord_t init_pos = maze->pos;
+    coord_t init_pos = maze->head;
     int init_coins = maze->coins;
     int init_steps = maze->steps;
     int init_drills = maze->drills;
     int init_score = maze_score(maze);
 
     for (direction_t direction = 0; direction < 4; ++direction) {
-        coord_t n_pos = c_add(maze->pos, movements[direction]);
+        coord_t n_pos = c_add(maze->head, movements[direction]);
 
         int prev_score = matrix_get(visited, cx(n_pos));
 
         if (!maze_can_go(maze, n_pos) || prev_score > init_score) continue;
 
 
-        maze->pos = n_pos;
+        maze->head = n_pos;
         maze->steps += 1;
         maze->path = path_add(maze->path, direction);
         char init_ch = maze_get(maze, n_pos);
@@ -120,7 +120,7 @@ solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
         if (tmp.score > final.score) final = tmp;
 
 
-        maze->pos = init_pos;
+        maze->head = init_pos;
         maze->steps = init_steps;
         maze->path = path_pop(maze->path);
         maze->coins = init_coins;

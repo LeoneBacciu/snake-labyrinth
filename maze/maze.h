@@ -11,9 +11,22 @@
 #include "containers/matrix.h"
 #include "containers/path.h"
 
+#define TAIL_BASE (1 << 9)
+#define TAIL_BASE_MAX (1 << 10)
+
 typedef enum {
     RIGHT = 0, UP = 1, LEFT = 2, DOWN = 3
 } direction_t;
+
+#define OPP(d) ((d + 2) % 4)
+
+#define D_TO_BITS(f, b) (TAIL_BASE + ((f + 1) << 4) + (b + 1))
+#define BITS_TO_F(b) (((b % TAIL_BASE) >> 4) - 1)
+#define BITS_TO_B(b) ((b % (1 << 4)) - 1)
+
+#define MAZE_SET_BITS(m, c, f, b) maze_set(m, c, D_TO_BITS(f, b))
+#define MAZE_SET_F(m, c, f) maze_set(m, c, D_TO_BITS(f, BITS_TO_B(maze_get(m, c))))
+#define MAZE_SET_B(m, c, b) maze_set(m, c, D_TO_BITS(BITS_TO_F(maze_get(m, c)), b))
 
 #define MAX_LIVES 5 ///< Initial lives
 
@@ -37,7 +50,7 @@ extern const char movement_to_char[];
  *
  * @var maze_state_t::matrix
  *  Matrix containing maze cells
- * @var maze_state_t::pos
+ * @var maze_state_t::head
  *  Current position of player
  * @var maze_state_t::end
  *  Position of exit
@@ -55,7 +68,7 @@ extern const char movement_to_char[];
 typedef struct {
     matrix_t *matrix;
     matrix_t *initial_matrix;
-    coord_t start, pos, end;
+    coord_t start, head, tail, end;
     int coins, steps, lives, drills;
     path_t *path;
 } maze_state_t;
@@ -114,7 +127,7 @@ maze_state_t *maze_copy_move(maze_state_t *maze, direction_t direction);
  * @param coord
  * @return the char at that position
  */
-char maze_get(maze_state_t *maze, coord_t coord);
+int maze_get(maze_state_t *maze, coord_t coord);
 
 /**
  * @brief Sets the value in position coord
@@ -122,7 +135,7 @@ char maze_get(maze_state_t *maze, coord_t coord);
  * @param coord
  * @param v the new value
  */
-void maze_set(maze_state_t *maze, coord_t coord, char v);
+void maze_set(maze_state_t *maze, coord_t coord, int v);
 
 /**
  * @brief Loads a maze from a file
@@ -140,7 +153,7 @@ maze_state_t *maze_load_stdin();
 /**
  * @brief Checks player reached end
  * @param maze
- * @return false if pos == end, else true
+ * @return false if head == end, else true
  */
 bool maze_is_end(maze_state_t *maze);
 

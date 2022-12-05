@@ -7,7 +7,7 @@ const char movement_to_char[] = {'E', 'N', 'W', 'S'};
 maze_state_t *maze_create(int cols, int rows) {
     maze_state_t *maze = malloc(sizeof(maze_state_t));
     maze->matrix = matrix_create(cols, rows, ' ');
-    maze->pos = maze->end = c(0, 0);
+    maze->head = maze->tail = maze->end = c(0, 0);
     maze->coins = maze->steps = maze->drills = 0;
     maze->lives = MAX_LIVES;
     maze->path = path_create();
@@ -35,26 +35,64 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
     maze_state_t *n_maze = malloc(sizeof(maze_state_t));
     memcpy(n_maze, maze, sizeof(maze_state_t));
     n_maze->matrix = matrix_copy(maze->initial_matrix);
-    n_maze->pos = n_maze->start;
+    n_maze->head = n_maze->tail = n_maze->start;
     n_maze->coins = n_maze->steps = n_maze->drills = 0;
     n_maze->lives = MAX_LIVES;
     n_maze->path = NULL;
     return n_maze;
 }
 
+void shift_tail(maze_state_t *maze) {
+    int d = maze_get(maze, maze->tail);
+    int f = BITS_TO_F(d);
+    if (f == -1) return;
+    maze_set(maze, maze->tail, ' ');
+    coord_t n_tail = c_add(maze->tail, movements[f]);
+    MAZE_SET_B(maze, n_tail, -1);
+    maze->tail = n_tail;
+}
+
+int cut_tail(maze_state_t *maze, coord_t pos) {
+    int vv = maze_get(maze, pos);
+    int s = 0, b = BITS_TO_B(vv), f = BITS_TO_F(vv);
+    maze->tail = c_add(pos, movements[f]);
+    while (b != -1) {
+        pos = c_add(pos, movements[b]);
+        b = BITS_TO_B(maze_get(maze, pos));
+        maze_set(maze, pos, ' ');
+        s++;
+    }
+    MAZE_SET_B(maze, maze->tail, -1);
+    return s;
+}
+
 bool maze_move(maze_state_t *maze, direction_t direction) {
-    coord_t n_coord = c_add(maze->pos, movements[direction]);
+    coord_t n_coord = c_add(maze->head, movements[direction]);
     if (!maze_can_go(maze, n_coord))
         return false;
-    maze->pos = n_coord;
+
+    MAZE_SET_F(maze, maze->head, direction);
+    maze->head = n_coord;
     maze->steps += 1;
     maze->path = path_add(maze->path, direction);
-    char ch = maze_get(maze, n_coord);
+    int ch = maze_get(maze, n_coord);
     if (ch == '$') maze->coins += 1;
     if (ch == '!') maze->coins /= 2;
     if (ch == 'T') maze->drills += 3;
     if (ch == '#') maze->drills -= 1;
-    maze_set(maze, n_coord, ' ');
+
+    if (ch >= TAIL_BASE && ch < TAIL_BASE_MAX) {
+        maze->coins -= cut_tail(maze, n_coord);
+    } else if (ch != '$') {
+        shift_tail(maze);
+    }
+
+    if (maze->coins) {
+        int d = OPP(direction);
+        MAZE_SET_BITS(maze, maze->head, -1, d);
+    } else {
+        MAZE_SET_BITS(maze, maze->head, -1, -1);
+    }
     return true;
 }
 
@@ -64,11 +102,11 @@ maze_state_t *maze_copy_move(maze_state_t *maze, direction_t direction) {
     return n_maze;
 }
 
-char maze_get(maze_state_t *maze, coord_t coord) {
-    return (char) matrix_get(maze->matrix, cx(coord));
+int maze_get(maze_state_t *maze, coord_t coord) {
+    return matrix_get(maze->matrix, cx(coord));
 }
 
-void maze_set(maze_state_t *maze, coord_t coord, char v) {
+void maze_set(maze_state_t *maze, coord_t coord, int v) {
     matrix_set(maze->matrix, cx(coord), v);
 }
 
@@ -91,14 +129,15 @@ maze_state_t *maze_load_file(char *path) {
         getline(&line, &len, fp);
         for (int c = 0; c < cols; ++c) {
             if (line[c] == 'o') {
-                maze->pos = c(c, r);
-                maze->start = c(c, r);
-                line[c] = ' ';
-            }
-            if (line[c] == '_') {
+                maze->head = maze->tail = maze->start = c(c, r);
+                maze_set(maze, c(c, r), TAIL_BASE);
+            } else if (line[c] == '_') {
                 maze->end = c(c, r);
+                maze_set(maze, c(c, r), line[c]);
+            } else {
+                maze_set(maze, c(c, r), line[c]);
             }
-            maze_set(maze, c(c, r), line[c]);
+
         }
     }
 
@@ -120,14 +159,14 @@ maze_state_t *maze_load_stdin() {
         getline(&line, &len, stdin);
         for (int c = 0; c < cols; ++c) {
             if (line[c] == 'o') {
-                maze->pos = c(c, r);
-                maze->start = c(c, r);
-                line[c] = ' ';
-            }
-            if (line[c] == '_') {
+                maze->head = maze->tail = maze->start = c(c, r);
+                maze_set(maze, c(c, r), TAIL_BASE);
+            } else if (line[c] == '_') {
                 maze->end = c(c, r);
+                maze_set(maze, c(c, r), line[c]);
+            } else {
+                maze_set(maze, c(c, r), line[c]);
             }
-            maze_set(maze, c(c, r), line[c]);
         }
     }
 
@@ -137,7 +176,7 @@ maze_state_t *maze_load_stdin() {
 }
 
 bool maze_is_end(maze_state_t *maze) {
-    return c_eq(maze->pos, maze->end);
+    return c_eq(maze->head, maze->end);
 }
 
 bool maze_valid_coord(maze_state_t *maze, coord_t coord) {
@@ -151,7 +190,6 @@ bool maze_can_go(maze_state_t *maze, coord_t coord) {
 int maze_score(maze_state_t *maze) {
     return maze->coins * 10 - maze->steps;
 }
-
 
 void maze_rollback(maze_state_t *maze, int steps) {
     if (maze->lives == 0) return;

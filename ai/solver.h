@@ -5,7 +5,7 @@
 #include "containers/path.h"
 #include "containers/heap.h"
 
-#define SOLVER_RUNS 100
+#define SOLVER_RUNS 500
 
 bool can_outperform(int best_score, int max_bonus, maze_state_t *maze);
 
