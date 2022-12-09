@@ -7,6 +7,8 @@
 #include <ncurses.h>
 #include <menu.h>
 
+#define IS_VERTEX(c, r, ratio) (((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2)
+
 typedef struct {
     bool b[4];
 } borders_t;

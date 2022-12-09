@@ -100,7 +100,7 @@ bool maze_move(maze_state_t *maze, direction_t direction) {
     if (ch == '#') maze->drills -= 1;
 
 
-    if (ch >= TAIL_BASE && ch < TAIL_BASE_MAX) {
+    if (IS_SNAKE(ch)) {
         maze->coins -= cut_tail(maze, n_coord);
     } else if (ch != '$') {
         shift_tail(maze);

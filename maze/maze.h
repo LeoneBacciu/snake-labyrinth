@@ -28,6 +28,10 @@ typedef enum {
 #define MAZE_SET_F(m, c, f) maze_set(m, c, D_TO_BITS(f, BITS_TO_B(maze_get(m, c))))
 #define MAZE_SET_B(m, c, b) maze_set(m, c, D_TO_BITS(BITS_TO_F(maze_get(m, c)), b))
 
+#define IS_SNAKE(a) (a >= TAIL_BASE && a < TAIL_BASE_MAX)
+#define IS_SNAKE_HEAD(a) (IS_SNAKE(a) && BITS_TO_F(a) == -1)
+#define IS_SNAKE_TAIL(a) (IS_SNAKE(a) && BITS_TO_F(a) != -1)
+
 #define MAX_LIVES 5 ///< Initial lives
 
 /**

@@ -96,7 +96,7 @@ attr_t char_to_color(int ch) {
 borders_t is_trim_char(int ch) {
     if (ch == '$' || ch == '!' || ch == 'T')
         return (borders_t) {true, true, true, true};
-    if (ch >= TAIL_BASE && BITS_TO_F(ch) != -1) {
+    if (IS_SNAKE_TAIL(ch)) {
         borders_t borders = {true, true, true, true};
         if (BITS_TO_B(ch) != -1)
             borders.b[BITS_TO_B(ch)] = false;
@@ -216,11 +216,10 @@ void render_maze(maze_state_t *maze) {
                   borders.b[1] && r % ratio == 0 ||
                   borders.b[2] && c % ratio == 0 ||
                   borders.b[3] && r % ratio == ratio - 1) ||
-                 ((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2) &&
-                ch >= TAIL_BASE)
+                 IS_VERTEX(c, r, ratio) && IS_SNAKE_TAIL(ch)))
                 ch = ' ';
 
-            if (ch >= TAIL_BASE) ch = (BITS_TO_F(ch) == -1) ? 'O' : 'o';
+            if (IS_SNAKE(ch)) ch = IS_SNAKE_HEAD(ch) ? 'O' : 'o';
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {
