@@ -66,6 +66,24 @@ int cut_tail(maze_state_t *maze, coord_t pos) {
     return s;
 }
 
+void fix_tail(maze_state_t *maze) {
+    coord_t pos = maze->head;
+    int d = BITS_TO_B(maze_get(maze, pos));
+    for (int i = 0; i < maze->coins; ++i) {
+        pos = c_add(pos, movements[d]);
+        d = BITS_TO_B(maze_get(maze, pos));
+    }
+
+    MAZE_SET_B(maze, pos, -1);
+    maze->tail = pos;
+
+    while (d != -1) {
+        pos = c_add(pos, movements[d]);
+        d = BITS_TO_B(maze_get(maze, pos));
+        maze_set(maze, pos, ' ');
+    }
+}
+
 bool maze_move(maze_state_t *maze, direction_t direction) {
     coord_t n_coord = c_add(maze->head, movements[direction]);
     if (!maze_can_go(maze, n_coord))
@@ -81,6 +99,7 @@ bool maze_move(maze_state_t *maze, direction_t direction) {
     if (ch == 'T') maze->drills += 3;
     if (ch == '#') maze->drills -= 1;
 
+
     if (ch >= TAIL_BASE && ch < TAIL_BASE_MAX) {
         maze->coins -= cut_tail(maze, n_coord);
     } else if (ch != '$') {
@@ -88,11 +107,12 @@ bool maze_move(maze_state_t *maze, direction_t direction) {
     }
 
     if (maze->coins) {
-        int d = OPP(direction);
-        MAZE_SET_BITS(maze, maze->head, -1, d);
+        MAZE_SET_BITS(maze, maze->head, -1, OPP(direction));
     } else {
         MAZE_SET_BITS(maze, maze->head, -1, -1);
     }
+
+    fix_tail(maze);
     return true;
 }
 
