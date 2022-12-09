@@ -93,8 +93,17 @@ attr_t char_to_color(int ch) {
     }
 }
 
-bool is_trim_char(char ch) {
-    return ch == '$' || ch == '!' || ch == 'T' || ch == 'o';
+borders_t is_trim_char(int ch) {
+    if (ch == '$' || ch == '!' || ch == 'T')
+        return (borders_t) {true, true, true, true};
+    if (ch >= TAIL_BASE && BITS_TO_F(ch) != -1) {
+        borders_t borders = {true, true, true, true};
+        if (BITS_TO_B(ch) != -1)
+            borders.b[BITS_TO_B(ch)] = false;
+        borders.b[BITS_TO_F(ch)] = false;
+        return borders;
+    }
+    return (borders_t) {false, false, false, false};
 }
 
 char char_to_display(int ch) {
@@ -199,10 +208,19 @@ void render_maze(maze_state_t *maze) {
             int nr = r / ratio, nc = c / ratio;
 
             int ch = maze_get(maze, c(nc, nr));
-            if (ch >= TAIL_BASE) ch = (BITS_TO_F(ch) == -1) ? 'O' : 'o';
-            if (is_trim_char(ch) && ratio > 2 &&
-                (r % ratio == 0 || c % ratio == 0 || r % ratio == ratio - 1 || c % ratio == ratio - 1))
+
+            borders_t borders = is_trim_char(ch);
+
+            if (ratio > 2 &&
+                ((borders.b[0] && c % ratio == ratio - 1 ||
+                  borders.b[1] && r % ratio == 0 ||
+                  borders.b[2] && c % ratio == 0 ||
+                  borders.b[3] && r % ratio == ratio - 1) ||
+                 ((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2) &&
+                ch >= TAIL_BASE)
                 ch = ' ';
+
+            if (ch >= TAIL_BASE) ch = (BITS_TO_F(ch) == -1) ? 'O' : 'o';
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {

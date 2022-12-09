@@ -1,10 +1,15 @@
 #pragma once
 
 #define _XOPEN_SOURCE_EXTENDED
+
 #include <stdlib.h>
 #include "maze/maze.h"
 #include <ncurses.h>
 #include <menu.h>
+
+typedef struct {
+    bool b[4];
+} borders_t;
 
 void char_to_move(maze_state_t *maze, int c);
 
