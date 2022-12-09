@@ -16,6 +16,7 @@
 #define MCOLOR_LIVES 9
 #define MCOLOR_DRILL 10
 #define MCOLOR_NDRILL 11
+#define MCOLOR_TAIL 12
 
 #define YOU_WON_LINES 5
 #define YOU_WON_COLS 43
@@ -54,6 +55,7 @@ void render_init() {
     init_pair(MCOLOR_LIVES, COLOR_RED, COLOR_BLACK);
     init_pair(MCOLOR_DRILL, COLOR_WHITE, COLOR_YELLOW);
     init_pair(MCOLOR_NDRILL, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(MCOLOR_TAIL, COLOR_WHITE, COLOR_YELLOW);
     clear();
 }
 
@@ -72,6 +74,8 @@ void char_to_move(maze_state_t *maze, int c) {
 
 attr_t char_to_color(int ch) {
     switch (ch) {
+        case 't':
+            return COLOR_PAIR(MCOLOR_TAIL);
         case 'o':
             return COLOR_PAIR(MCOLOR_ME);
         case 'O':
@@ -106,8 +110,20 @@ borders_t is_trim_char(int ch) {
     return (borders_t) {false, false, false, false};
 }
 
+int distance_from_tail(maze_state_t *maze, coord_t pos) {
+    int i = 0;
+    int d = BITS_TO_B(maze_get(maze, pos));
+    while (d != -1) {
+        pos = c_add(pos, movements[d]);
+        d = BITS_TO_B(maze_get(maze, pos));
+        i++;
+    }
+    return i;
+}
+
 char char_to_display(int ch) {
     if (ch == '$' || ch == '!' || ch == 'T') return ch;
+    if (ch == 't') return '*';
     return ' ';
 }
 
@@ -183,8 +199,11 @@ void render_maze(maze_state_t *maze) {
         attron(COLOR_PAIR(MCOLOR_NSCORE));
     else
         attron(COLOR_PAIR(MCOLOR_PSCORE));
-//    mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
+#ifdef ROMAN
+    mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %s", to_roman(maze_score(maze)));
+#else
     mvprintw((LINES - rows_term) / 2 - 2, (COLS - cols_term) / 2, "Score: %d", maze_score(maze));
+#endif
 
     attron(COLOR_PAIR(MCOLOR_NDRILL));
     mvprintw((LINES + rows_term) / 2 + 1, (COLS + cols_term) / 2 - 9, "Drills: %d", maze->drills);
@@ -219,7 +238,10 @@ void render_maze(maze_state_t *maze) {
                  IS_VERTEX(c, r, ratio) && IS_SNAKE_TAIL(ch)))
                 ch = ' ';
 
-            if (IS_SNAKE(ch)) ch = IS_SNAKE_HEAD(ch) ? 'O' : 'o';
+            if (IS_SNAKE(ch)) {
+                if (maze->coins > 4 && distance_from_tail(maze, c(nc, nr)) < 2) ch = 't';
+                else ch = IS_SNAKE_HEAD(ch) ? 'O' : 'o';
+            }
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {
@@ -229,7 +251,6 @@ void render_maze(maze_state_t *maze) {
             }
 
             mvaddch((LINES - rows_term) / 2 + r, (COLS - cols_term) / 2 + c, char_to_display(ch));
-
         }
     }
     refresh();
@@ -249,7 +270,11 @@ void render_end_game(maze_state_t *maze) {
         attron(COLOR_PAIR(MCOLOR_NSCORE));
     else
         attron(COLOR_PAIR(MCOLOR_PSCORE));
+#ifdef ROMAN
     mvprintw(LINES / 2 + 6, COLS / 2, "Score: %s", to_roman(maze_score(maze)));
+#else
+    mvprintw(LINES / 2 + 6, COLS / 2, "Score: %d", maze_score(maze));
+#endif
     while (1) {
         char ch = getch();
         if (ch == 'q' || ch == 'Q') break;
