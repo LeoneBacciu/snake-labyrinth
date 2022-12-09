@@ -74,6 +74,8 @@ attr_t char_to_color(int ch) {
     switch (ch) {
         case 'o':
             return COLOR_PAIR(MCOLOR_ME);
+        case 'O':
+            return COLOR_PAIR(MCOLOR_ME);
         case 'x':
             return COLOR_PAIR(MCOLOR_ME);
         case '$':
@@ -89,6 +91,10 @@ attr_t char_to_color(int ch) {
         default:
             return COLOR_PAIR(MCOLOR_DEFAULT);
     }
+}
+
+bool is_trim_char(char ch) {
+    return ch == '$' || ch == '!' || ch == 'T' || ch == 'o';
 }
 
 char char_to_display(int ch) {
@@ -155,6 +161,15 @@ void render_maze(maze_state_t *maze) {
     int ratio_x = COLS / (int) maze->matrix->cols, ratio_y = (LINES - 5) / (int) maze->matrix->rows;
     int ratio = MIN(ratio_x, ratio_y);
     int rows_term = (int) maze->matrix->rows * ratio, cols_term = (int) maze->matrix->cols * ratio;
+
+    if (ratio == 0) {
+        attroff(-1);
+        attron(COLOR_PAIR(MCOLOR_DANGER));
+        printw("Terminal too small for this maze!");
+        refresh();
+        return;
+    }
+
     if (maze_score(maze) < 0)
         attron(COLOR_PAIR(MCOLOR_NSCORE));
     else
@@ -177,13 +192,6 @@ void render_maze(maze_state_t *maze) {
         mvprintw((LINES + rows_term) / 2 + 1, (COLS - cols_term) / 2, "No more lives!");
     }
 
-    if (ratio == 0) {
-        attroff(-1);
-        attron(COLOR_PAIR(MCOLOR_DANGER));
-        printw("Terminal too small for this maze!");
-        refresh();
-        return;
-    }
 
     attr_t last_color = -1;
     for (int r = 0; r < rows_term; ++r) {
@@ -191,7 +199,10 @@ void render_maze(maze_state_t *maze) {
             int nr = r / ratio, nc = c / ratio;
 
             int ch = maze_get(maze, c(nc, nr));
-            if (ch >= TAIL_BASE) ch = 'o';
+            if (ch >= TAIL_BASE) ch = (BITS_TO_F(ch) == -1) ? 'O' : 'o';
+            if (is_trim_char(ch) && ratio > 2 &&
+                (r % ratio == 0 || c % ratio == 0 || r % ratio == ratio - 1 || c % ratio == ratio - 1))
+                ch = ' ';
 
             attr_t color = char_to_color(ch);
             if (last_color != color) {
@@ -199,7 +210,9 @@ void render_maze(maze_state_t *maze) {
                 attron(color);
                 last_color = color;
             }
+
             mvaddch((LINES - rows_term) / 2 + r, (COLS - cols_term) / 2 + c, char_to_display(ch));
+
         }
     }
     refresh();
