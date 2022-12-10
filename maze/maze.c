@@ -66,9 +66,8 @@ int cut_tail(maze_state_t *maze, coord_t pos) {
     return s;
 }
 
-void fix_tail(maze_state_t *maze) {
+void fix_tail(maze_state_t *maze, direction_t d) {
     coord_t pos = maze->head;
-    int d = BITS_TO_B(maze_get(maze, pos));
     for (int i = 0; i < maze->coins; ++i) {
         pos = c_add(pos, movements[d]);
         d = BITS_TO_B(maze_get(maze, pos));
@@ -112,7 +111,7 @@ bool maze_move(maze_state_t *maze, direction_t direction) {
         MAZE_SET_BITS(maze, maze->head, -1, -1);
     }
 
-    fix_tail(maze);
+    fix_tail(maze, OPP(direction));
     return true;
 }
 
