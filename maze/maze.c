@@ -44,25 +44,25 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
 
 void shift_tail(maze_state_t *maze) {
     int d = maze_get(maze, maze->tail);
-    int f = BITS_TO_F(d);
+    int f = SNAKE_BITS_F(d);
     if (f == -1) return;
     maze_set(maze, maze->tail, ' ');
     coord_t n_tail = c_add(maze->tail, movements[f]);
-    MAZE_SET_B(maze, n_tail, -1);
+    MAZE_SNAKE_SET_B(maze, n_tail, -1);
     maze->tail = n_tail;
 }
 
 int cut_tail(maze_state_t *maze, coord_t pos) {
     int vv = maze_get(maze, pos);
-    int s = 0, b = BITS_TO_B(vv), f = BITS_TO_F(vv);
+    int s = 0, b = SNAKE_BITS_B(vv), f = SNAKE_BITS_F(vv);
     maze->tail = c_add(pos, movements[f]);
     while (b != -1) {
         pos = c_add(pos, movements[b]);
-        b = BITS_TO_B(maze_get(maze, pos));
+        b = SNAKE_BITS_B(maze_get(maze, pos));
         maze_set(maze, pos, ' ');
         s++;
     }
-    MAZE_SET_B(maze, maze->tail, -1);
+    MAZE_SNAKE_SET_B(maze, maze->tail, -1);
     return s;
 }
 
@@ -70,15 +70,15 @@ void fix_tail(maze_state_t *maze, direction_t d) {
     coord_t pos = maze->head;
     for (int i = 0; i < maze->coins; ++i) {
         pos = c_add(pos, movements[d]);
-        d = BITS_TO_B(maze_get(maze, pos));
+        d = SNAKE_BITS_B(maze_get(maze, pos));
     }
 
-    MAZE_SET_B(maze, pos, -1);
+    MAZE_SNAKE_SET_B(maze, pos, -1);
     maze->tail = pos;
 
     while (d != -1) {
         pos = c_add(pos, movements[d]);
-        d = BITS_TO_B(maze_get(maze, pos));
+        d = SNAKE_BITS_B(maze_get(maze, pos));
         maze_set(maze, pos, ' ');
     }
 }
@@ -88,7 +88,7 @@ bool maze_move(maze_state_t *maze, direction_t direction) {
     if (!maze_can_go(maze, n_coord))
         return false;
 
-    MAZE_SET_F(maze, maze->head, direction);
+    MAZE_SNAKE_SET_F(maze, maze->head, direction);
     maze->head = n_coord;
     maze->steps += 1;
     maze->path = path_add(maze->path, direction);
@@ -106,9 +106,9 @@ bool maze_move(maze_state_t *maze, direction_t direction) {
     }
 
     if (maze->coins) {
-        MAZE_SET_BITS(maze, maze->head, -1, OPP(direction));
+        MAZE_SNAKE_SET_BITS(maze, maze->head, -1, OPP(direction));
     } else {
-        MAZE_SET_BITS(maze, maze->head, -1, -1);
+        MAZE_SNAKE_SET_BITS(maze, maze->head, -1, -1);
     }
 
     fix_tail(maze, OPP(direction));

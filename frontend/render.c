@@ -102,9 +102,9 @@ borders_t is_trim_char(int ch) {
         return (borders_t) {true, true, true, true};
     if (IS_SNAKE_TAIL(ch)) {
         borders_t borders = {true, true, true, true};
-        if (BITS_TO_B(ch) != -1)
-            borders.b[BITS_TO_B(ch)] = false;
-        borders.b[BITS_TO_F(ch)] = false;
+        if (SNAKE_BITS_B(ch) != -1)
+            borders.b[SNAKE_BITS_B(ch)] = false;
+        borders.b[SNAKE_BITS_F(ch)] = false;
         return borders;
     }
     return (borders_t) {false, false, false, false};
@@ -112,10 +112,10 @@ borders_t is_trim_char(int ch) {
 
 int distance_from_tail(maze_state_t *maze, coord_t pos) {
     int i = 0;
-    int d = BITS_TO_B(maze_get(maze, pos));
+    int d = SNAKE_BITS_B(maze_get(maze, pos));
     while (d != -1) {
         pos = c_add(pos, movements[d]);
-        d = BITS_TO_B(maze_get(maze, pos));
+        d = SNAKE_BITS_B(maze_get(maze, pos));
         i++;
     }
     return i;

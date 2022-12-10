@@ -20,17 +20,17 @@ typedef enum {
 
 #define OPP(d) ((d + 2) % 4)
 
-#define D_TO_BITS(f, b) (TAIL_BASE + ((f + 1) << 4) + (b + 1))
-#define BITS_TO_F(b) (((b % TAIL_BASE) >> 4) - 1)
-#define BITS_TO_B(b) ((b % (1 << 4)) - 1)
+#define SNAKE_TO_BITS(f, b) (TAIL_BASE + ((f + 1) << 4) + (b + 1))
+#define SNAKE_BITS_F(b) (((b % TAIL_BASE) >> 4) - 1)
+#define SNAKE_BITS_B(b) ((b % (1 << 4)) - 1)
 
-#define MAZE_SET_BITS(m, c, f, b) maze_set(m, c, D_TO_BITS(f, b))
-#define MAZE_SET_F(m, c, f) maze_set(m, c, D_TO_BITS(f, BITS_TO_B(maze_get(m, c))))
-#define MAZE_SET_B(m, c, b) maze_set(m, c, D_TO_BITS(BITS_TO_F(maze_get(m, c)), b))
+#define MAZE_SNAKE_SET_BITS(m, c, f, b) maze_set(m, c, SNAKE_TO_BITS(f, b))
+#define MAZE_SNAKE_SET_F(m, c, f) maze_set(m, c, SNAKE_TO_BITS(f, SNAKE_BITS_B(maze_get(m, c))))
+#define MAZE_SNAKE_SET_B(m, c, b) maze_set(m, c, SNAKE_TO_BITS(SNAKE_BITS_F(maze_get(m, c)), b))
 
 #define IS_SNAKE(a) (a >= TAIL_BASE && a < TAIL_BASE_MAX)
-#define IS_SNAKE_HEAD(a) (IS_SNAKE(a) && BITS_TO_F(a) == -1)
-#define IS_SNAKE_TAIL(a) (IS_SNAKE(a) && BITS_TO_F(a) != -1)
+#define IS_SNAKE_HEAD(a) (IS_SNAKE(a) && SNAKE_BITS_F(a) == -1)
+#define IS_SNAKE_TAIL(a) (IS_SNAKE(a) && SNAKE_BITS_F(a) != -1)
 
 #define MAX_LIVES 5 ///< Initial lives
 
