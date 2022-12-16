@@ -67,6 +67,13 @@ path_t *path_element(int value);
 path_t *path_copy(path_t *path);
 
 /**
+ * @brief Increments the ref counter, use this instead of direct assignment
+ * @param path
+ * @return path_t*, the same as path
+ */
+path_t *path_assign(path_t *path);
+
+/**
  * @brief Creates a new Path from the one given and the value
  * @param path base Path
  * @param value number to append

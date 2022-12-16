@@ -63,9 +63,14 @@ path_t *path_copy(path_t *path) {
     return initial;
 }
 
+path_t *path_assign(path_t *path) {
+    if (path != NULL) path->ref_count += 1;
+    return path;
+}
+
 path_t *path_pop(path_t *path) {
     path_t *tail = path->prev;
     free(path);
-    if(tail != NULL) tail->ref_count -= 1;
+    if (tail != NULL) tail->ref_count -= 1;
     return tail;
 }

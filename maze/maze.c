@@ -28,6 +28,7 @@ maze_state_t *maze_copy(maze_state_t *maze) {
     maze_state_t *n_maze = malloc(sizeof(maze_state_t));
     memcpy(n_maze, maze, sizeof(maze_state_t));
     n_maze->matrix = matrix_copy(maze->matrix);
+    n_maze->path = path_assign(maze->path);
     return n_maze;
 }
 
