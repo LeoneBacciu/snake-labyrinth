@@ -89,43 +89,23 @@ solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
 
     solution_t final = {INT_MIN, path_create()};
 
-    coord_t init_pos = maze->head;
-    int init_coins = maze->coins;
-    int init_steps = maze->steps;
-    int init_drills = maze->drills;
-    int init_score = maze_score(maze);
 
     for (direction_t direction = 0; direction < 4; ++direction) {
         coord_t n_pos = c_add(maze->head, movements[direction]);
+        maze_state_t *copy = maze_copy_move(maze, direction);
 
         int prev_score = matrix_get(visited, cx(n_pos));
 
-        if (!maze_can_go(maze, n_pos) || prev_score > init_score) continue;
+        if (!maze_can_go(maze, n_pos) || prev_score > maze_score(maze)) continue;
 
 
-        maze->head = n_pos;
-        maze->steps += 1;
-        maze->path = path_add(maze->path, direction);
-        char init_ch = maze_get(maze, n_pos);
-        if (init_ch == '$') maze->coins += 1;
-        if (init_ch == '!') maze->coins /= 2;
-        if (init_ch == 'T') maze->drills += 3;
-        if (init_ch == '#') maze->drills -= 1;
-        maze_set(maze, n_pos, ' ');
-
-        matrix_set(visited, cx(n_pos), init_score);
+        matrix_set(visited, cx(n_pos), maze_score(maze));
 
 
-        solution_t tmp = ciccioricorsione(maze, visited, depth - 1);
+        solution_t tmp = ciccioricorsione(copy, visited, depth - 1);
+        maze_free(copy);
         if (tmp.score > final.score) final = tmp;
 
-
-        maze->head = init_pos;
-        maze->steps = init_steps;
-        maze->path = path_pop(maze->path);
-        maze->coins = init_coins;
-        maze->drills = init_drills;
-        maze_set(maze, n_pos, init_ch);
 
         matrix_set(visited, cx(n_pos), prev_score);
     }
