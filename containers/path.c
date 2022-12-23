@@ -7,7 +7,7 @@ path_t *path_create() {
 path_t *path_element(int value) {
     path_t *path = malloc(sizeof(path_t));
     path->size = 1;
-    path->ref_count = 0;
+    path->ref_count = 1;
     path->value = value;
     path->prev = NULL;
     return path;
@@ -40,10 +40,9 @@ path_values_t path_values(path_t *path) {
 
 void path_free(path_t *path) {
     path_t *prev, *node = path;
-    while (node != NULL && node->ref_count == 0) {
+    while (node != NULL && (--node->ref_count) == 0) {
         prev = node;
         node = node->prev;
-        if (node != NULL) node->ref_count -= 1;
         free(prev);
     }
 }
@@ -66,11 +65,4 @@ path_t *path_copy(path_t *path) {
 path_t *path_assign(path_t *path) {
     if (path != NULL) path->ref_count += 1;
     return path;
-}
-
-path_t *path_pop(path_t *path) {
-    path_t *tail = path->prev;
-    free(path);
-    if (tail != NULL) tail->ref_count -= 1;
-    return tail;
 }

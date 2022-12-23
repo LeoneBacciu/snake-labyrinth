@@ -82,13 +82,6 @@ path_t *path_assign(path_t *path);
 path_t *path_add(path_t *path, int value);
 
 /**
- * @brief Pops the last element of the path
- * @param path
- * @return pointer to the new tail
- */
-path_t *path_pop(path_t *path);
-
-/**
  * @brief Transforms a path_t in the corresponding path_values_t
  * @param path
  * @return Array of the values of the path_t in order of insertion
