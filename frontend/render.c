@@ -127,17 +127,22 @@ char char_to_display(int ch) {
     return ' ';
 }
 
+
 void render_loop(int argc, char **argv) {
+    char *choice = "AI FAST\0";
+    char *choice1 = "AI STRONG\0";
+    char *choice2 = "INTERACTIVE\0";
+    char *choices[3];
+    choices[0] = choice;
+    choices[1] = choice1;
+    choices[2] = choice2;
+    int dec = render_menu("SNAKE\0", 3, choices);
     maze_state_t *maze;
 
     if (argc > 1) maze = maze_load_file(argv[1]);
     else exit(EXIT_FAILURE);
 
-    if (argc > 2 && is_challenge(argv[2])) {
-//        solve_rl(maze);
-//        exit(0);
-
-        // TODO: rewrite better
+    if (dec == 0) {
         maze_state_t *initial_solution = solve(maze);
         maze_state_t *sim = maze_simulate(maze, path_values(initial_solution->path));
         for (int i = 0; i < SOLVER_RUNS; ++i) {
@@ -153,10 +158,12 @@ void render_loop(int argc, char **argv) {
         }
 
         render_replay(sim);
-//        maze_state_t *sol = solve_rec(maze);
-//        render_replay(sol);
-        while (getch() != 'q');
-    } else {
+        render_end_game(sim);
+    } else if (dec == 1) {
+        maze_state_t *sim = solve_rec(maze);
+        render_replay(sim);
+        render_end_game(sim);
+    } else if (dec == 2) {
         render_maze(maze);
         int c;
         while (1) {
