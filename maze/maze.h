@@ -191,4 +191,10 @@ int maze_score(maze_state_t *maze);
  */
 void maze_rollback(maze_state_t *maze, int steps);
 
+/**
+ * @brief Executes the path on a copy of the maze
+ * @param maze
+ * @param path
+ * @return the copy of the maze
+ */
 maze_state_t *maze_simulate(maze_state_t *maze, path_values_t path);

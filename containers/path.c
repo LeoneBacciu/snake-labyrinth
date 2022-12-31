@@ -40,7 +40,7 @@ path_values_t path_values(path_t *path) {
 
 void path_free(path_t *path) {
     path_t *prev, *node = path;
-    while (node != NULL && (--node->ref_count) == 0) {
+    while (node != NULL && --(node->ref_count) == 0) {
         prev = node;
         node = node->prev;
         free(prev);

@@ -143,10 +143,10 @@ void render_loop(int argc, char **argv) {
     else exit(EXIT_FAILURE);
 
     if (dec == 0) {
-        maze_state_t *initial_solution = solve(maze);
+        maze_state_t *initial_solution = solve_fast(maze);
         maze_state_t *sim = maze_simulate(maze, path_values(initial_solution->path));
         for (int i = 0; i < SOLVER_RUNS; ++i) {
-            maze_state_t *tmp = solve(maze);
+            maze_state_t *tmp = solve_fast(maze);
             maze_state_t *tmp_sim = maze_simulate(maze, path_values(tmp->path));
             if (maze_score(sim) < maze_score(tmp_sim)) {
                 maze_free(sim);
@@ -160,7 +160,7 @@ void render_loop(int argc, char **argv) {
         render_replay(sim);
         render_end_game(sim);
     } else if (dec == 1) {
-        maze_state_t *sim = solve_rec(maze);
+        maze_state_t *sim = solve_strong(maze);
         render_replay(sim);
         render_end_game(sim);
     } else if (dec == 2) {

@@ -25,6 +25,15 @@
 
 int clamp(int low, int value, int high);
 
+/**
+ * @brief Sleeps for a certain time in milliseconds
+ * @param milliseconds the sleep time
+ */
 void sleep_ms(int milliseconds);
 
+/**
+ * @brief Converts the score from arabic to latin numbers
+ * @param x the score in arabic numbers
+ * @return the latin numbers
+ */
 char *to_roman(int x);

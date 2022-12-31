@@ -1,7 +1,7 @@
 #include "solver.h"
 #include "random.h"
 
-maze_state_t *solve(maze_state_t *maze) {
+maze_state_t *solve_fast(maze_state_t *maze) {
     maze_state_t *best = maze_copy(maze);
     int best_score = INT_MIN;
 
@@ -66,7 +66,7 @@ maze_state_t *solve(maze_state_t *maze) {
         maze_free(state);
     }
 
-    return best;
+    return maze_simulate(best, path_values(best->path));
 }
 
 bool can_outperform(int best_score, int max_bonus, maze_state_t *maze) {
@@ -112,7 +112,7 @@ solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
     return final;
 }
 
-maze_state_t *solve_rec(maze_state_t *maze) {
+maze_state_t *solve_strong(maze_state_t *maze) {
     matrix_t *visited = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MIN);
     solution_t solution = ciccioricorsione(maze, visited, 20);
     return maze_simulate(maze, path_values(solution.path));
