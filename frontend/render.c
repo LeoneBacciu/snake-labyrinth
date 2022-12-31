@@ -2,8 +2,6 @@
 #include "ai/solver.h"
 #include "ai/rl/agent.h"
 
-#define is_challenge(s) (!strcmp(s, "--challenge"))
-
 #define MCOLOR_DEFAULT 0
 #define MCOLOR_ME 1
 #define MCOLOR_GOLD 2
@@ -129,6 +127,7 @@ char char_to_display(int ch) {
 
 
 void render_loop(int argc, char **argv) {
+#ifdef USE_MENU
     char *choice = "AI FAST\0";
     char *choice1 = "AI STRONG\0";
     char *choice2 = "INTERACTIVE\0";
@@ -136,13 +135,19 @@ void render_loop(int argc, char **argv) {
     choices[0] = choice;
     choices[1] = choice1;
     choices[2] = choice2;
-    int dec = render_menu("SNAKE\0", 3, choices);
+    int mode = render_menu("SNAKE\0", 3, choices);
+#else
+    int mode = 2;
+    if (argc > 2 && !strcmp(argv[2], "--fast")) mode = 0;
+    if (argc > 2 && !strcmp(argv[2], "--strong")) mode = 1;
+#endif
+
     maze_state_t *maze;
 
     if (argc > 1) maze = maze_load_file(argv[1]);
     else exit(EXIT_FAILURE);
 
-    if (dec == 0) {
+    if (mode == 0) {
         maze_state_t *initial_solution = solve_fast(maze);
         maze_state_t *sim = maze_simulate(maze, path_values(initial_solution->path));
         for (int i = 0; i < SOLVER_RUNS; ++i) {
@@ -159,11 +164,11 @@ void render_loop(int argc, char **argv) {
 
         render_replay(sim);
         render_end_game(sim);
-    } else if (dec == 1) {
+    } else if (mode == 1) {
         maze_state_t *sim = solve_strong(maze);
         render_replay(sim);
         render_end_game(sim);
-    } else if (dec == 2) {
+    } else if (mode == 2) {
         render_maze(maze);
         int c;
         while (1) {
@@ -294,6 +299,7 @@ void render_end_game(maze_state_t *maze) {
 
 }
 
+#ifdef USE_MENU
 int render_menu(char *title, int choices_count, char **choices) {
     ITEM **items;
     int c;
@@ -354,6 +360,7 @@ int render_menu(char *title, int choices_count, char **choices) {
 
     return current;
 }
+#endif
 
 void render_replay(maze_state_t *maze) {
     maze_state_t *copy = maze_copy_initial(maze);

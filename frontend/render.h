@@ -5,7 +5,10 @@
 #include <stdlib.h>
 #include "maze/maze.h"
 #include <ncurses.h>
+
+#ifdef USE_MENU
 #include <menu.h>
+#endif
 
 #define IS_VERTEX(c, r, ratio) (((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2)
 
@@ -51,6 +54,7 @@ void render_maze(maze_state_t *maze);
 
 void render_end_game(maze_state_t *maze);
 
+#ifdef USE_MENU
 /**
  * @brief Renders the menu
  * @param title the title of the game
@@ -60,6 +64,7 @@ void render_end_game(maze_state_t *maze);
  */
 
 int render_menu(char *title, int choices_count, char **choices);
+#endif
 
 /**
  * @brief Renders the replay of the game
