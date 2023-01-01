@@ -1,3 +1,8 @@
+/**
+ * @file utils.h
+ * @brief Collection of generic utility functions
+ */
+
 #pragma once
 
 #include <malloc.h>
@@ -23,6 +28,13 @@
 #define MIN(a, b) (a<b? a : b)
 #define MAX(a, b) (a>b? a : b)
 
+/**
+ * @brief Clamps a number between low and high
+ * @param low
+ * @param value
+ * @param high
+ * @return the clamped number
+ */
 int clamp(int low, int value, int high);
 
 /**
@@ -34,6 +46,6 @@ void sleep_ms(int milliseconds);
 /**
  * @brief Converts the score from arabic to latin numbers
  * @param x the score in arabic numbers
- * @return the latin numbers
+ * @return the score in latin numbers
  */
 char *to_roman(int x);

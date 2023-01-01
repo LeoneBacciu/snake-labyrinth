@@ -1,6 +1,6 @@
 #include <locale.h>
 #include <signal.h>
-#include "frontend/render.h"
+#include "render/render.h"
 #include "ai/random.h"
 
 

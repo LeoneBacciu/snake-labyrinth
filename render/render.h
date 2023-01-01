@@ -1,22 +1,31 @@
+/**
+ * @file render.h
+ * @brief Rendering functions
+ */
+
 #pragma once
 
+/// @cond DO_NOT_DOCUMENT
 #define _XOPEN_SOURCE_EXTENDED
+/// @endcond
 
 #include <stdlib.h>
-#include "maze/maze.h"
 #include <ncurses.h>
+
+#include "maze/maze.h"
 
 #ifdef USE_MENU
 #include <menu.h>
 #endif
 
+/// @brief Checks if coordinate is a cell vertex
 #define IS_VERTEX(c, r, ratio) (((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2)
 
 /**
  * @struct borders_t
  * @brief Describes borders of a cell
  *
- * @var bool::b
+ * @var borders_t::b
  *  States if the four borders of a char are occupied
  */
 typedef struct {

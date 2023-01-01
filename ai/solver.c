@@ -73,15 +73,27 @@ bool can_outperform(int best_score, int max_bonus, maze_state_t *maze) {
     return best_score < maze_score(maze) + (max_bonus - maze->coins) * 10;
 }
 
-/*ritorna il percorso migliore partendo da maze.head, essendo stato nelle celle visited e
- * non impiegando più di depth passi */
-
+/**
+ * @struct solution_t
+ * @brief Represents a candidate solution
+ *
+ * @var solution_t::score
+ *  Score of the solution
+ * @var solution_t::path
+ *  Path of the solution
+ */
 typedef struct {
     int score;
     path_t *path;
 } solution_t;
 
-
+/**
+ * @brief Complete search for a solution
+ * @param maze
+ * @param visited matrix of visited cells
+ * @param depth max depth of solution
+ * @return the best solution_t
+ */
 solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
     if (depth == 0) return (solution_t) {INT_MIN, path_create()};
 

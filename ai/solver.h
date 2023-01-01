@@ -1,3 +1,8 @@
+/**
+ * @file solver.h
+ * @brief AI solver functions
+ */
+
 #pragma once
 
 #include <limits.h>
@@ -5,7 +10,7 @@
 #include "containers/path.h"
 #include "containers/heap.h"
 
-#define SOLVER_RUNS 500
+#define SOLVER_RUNS 500 ///< @brief Default number of random fast solver runs
 
 /**
  * @brief states if the maze can be completed with a better score
