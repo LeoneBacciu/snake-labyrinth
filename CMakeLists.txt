@@ -23,6 +23,8 @@ include_directories(maze)
 
 add_executable(snake_labyrinth
         ai/random.c ai/random.h
+        ai/rl/q_table.c ai/rl/q_table.h
+        ai/rl/agent.c ai/rl/agent.h
         ai/solver.c ai/solver.h
         containers/coord.c containers/coord.h
         containers/heap.c containers/heap.h

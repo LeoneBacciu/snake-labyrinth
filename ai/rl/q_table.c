@@ -26,17 +26,6 @@ q_table_create(size_t nx, size_t ny, size_t nd, size_t na, double lr, double gam
     return q_table;
 }
 
-reward_t s_value(q_table_t *table, state_t state) {
-    if (state.depth > 0) return -1;
-    if (c_eq(table->environment->end, state.coord)) return 0;
-    char cell = maze_get(table->environment, state.coord);
-    if (cell == '$') return 10;
-    if (cell == '!') return -10;
-//    if (cell == 'T') return 0;
-    if (cell == '#') return -100;
-    return -1;
-}
-
 reward_t q_value_get(q_table_t *table, state_t state, action_t action) {
     return table->table[q_table_index(table, state, action)];
 }

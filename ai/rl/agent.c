@@ -1,5 +1,6 @@
 #include "agent.h"
 #include "q_table.h"
+#include "ai/random.h"
 
 int rand_less(int max) {
     return rand() % max;
@@ -15,10 +16,10 @@ bool fix_action(maze_state_t *maze, state_t state, action_t *action) {
     return false;
 }
 
-void solve_rl(maze_state_t *maze) {
+maze_state_t *solve_rl(maze_state_t *maze) {
     double eps = 0.1;
-    int max_path_depth = maze->matrix->cols * maze->matrix->rows;
-    int episodes = 10000000;
+    int max_path_depth = maze->matrix->cols * maze->matrix->rows * 10;
+    int episodes = 1000000;
     int max_depth = 4;
 
     q_table_t *table = q_table_create(maze->matrix->cols, maze->matrix->rows, max_depth, 4, 0.1, 0.9, maze);
@@ -31,7 +32,8 @@ void solve_rl(maze_state_t *maze) {
     }
 
     for (int e = 0; e < episodes; ++e) {
-        if (eps < 0.8 && e % (episodes / 5) == 0) eps += 0.1;
+        maze = maze_copy_initial(maze);
+        if (eps <= 0.8 && e % (episodes / 5) == 0) eps += 0.1;
 
         coord_t pos;
         do {
@@ -44,8 +46,8 @@ void solve_rl(maze_state_t *maze) {
 
         for (int i = 0; i < max_path_depth; ++i) {
             action_t action;
-            if (((double) rand()) / RAND_MAX > eps) { // explore
-                action = rand_less(4);
+            if (random_range_double(0, 1) > eps) { // explore
+                action = random_range_int(0, 3);
             } else { // exploit
                 action = q_action_max(table, state);
             }
@@ -56,7 +58,11 @@ void solve_rl(maze_state_t *maze) {
             coord_t n_pos = c_add(state.coord, movements[action]);
             unsigned n_depth = matrix_get(visited, cx(state.coord)) + 1;
             state_t n_state = {n_pos, n_depth};
-            reward_t reward = s_value(table, n_state);
+
+            int p_score = maze_score(maze);
+            maze_move(maze, action);
+            reward_t reward = maze_score(maze) - p_score;
+
             if (i >= max_path_depth - 1) reward = -100;
             if (i >= max_path_depth - 1) break;
             if (n_depth > max_depth - 1) reward = -100;
@@ -72,25 +78,18 @@ void solve_rl(maze_state_t *maze) {
 
         matrix_free(visited);
     }
-    q_print(table);
-
 
     matrix_t *visited = matrix_create(maze->matrix->cols, maze->matrix->rows, 0);
     state_t st = {maze->head, 0};
+    path_t *best_path = path_create();
     while (!c_eq(st.coord, maze->end)) {
         maze_set(maze, st.coord, 'x');
         action_t action = q_action_max(table, st);
+        best_path = path_add(best_path, action);
         st.coord = c_add(st.coord, movements[action]);
         st.depth = matrix_get(visited, cx(st.coord));
         matrix_set(visited, cx(st.coord), st.depth + 1);
         if (st.depth > max_depth - 1) break;
     }
-    printf("\n");
-    printf("\n");
-    for (int yy = 0; yy < maze->matrix->rows; ++yy) {
-        for (int xx = 0; xx < maze->matrix->cols; ++xx) {
-            printf("%c", maze_get(maze, c(xx, yy)));
-        }
-        printf("\n");
-    }
+    return maze_simulate(maze, path_values(best_path));
 }

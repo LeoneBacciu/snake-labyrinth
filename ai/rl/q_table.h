@@ -26,8 +26,6 @@ typedef struct {
 q_table_t *
 q_table_create(size_t nx, size_t ny, size_t nd, size_t na, double lr, double gamma, maze_state_t *environment);
 
-reward_t s_value(q_table_t *table, state_t state);
-
 reward_t q_value_get(q_table_t *table, state_t state, action_t action);
 
 reward_t q_value_max(q_table_t *table, state_t state);

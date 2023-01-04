@@ -2,4 +2,4 @@
 
 #include "maze.h"
 
-void solve_rl(maze_state_t *maze);
+maze_state_t *solve_rl(maze_state_t *maze);
