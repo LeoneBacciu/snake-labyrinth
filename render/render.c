@@ -207,7 +207,7 @@ void render_maze(maze_state_t *maze) {
         return;
     }
 
-    if (maze_score(maze) < 0)
+    if (maze_score(maze) < 1000)
         attron(COLOR_PAIR(MCOLOR_NSCORE));
     else
         attron(COLOR_PAIR(MCOLOR_PSCORE));
