@@ -126,27 +126,7 @@ char char_to_display(int ch) {
 }
 
 
-void render_loop(int argc, char **argv) {
-#ifdef USE_MENU
-    char *choice = "AI FAST\0";
-    char *choice1 = "AI STRONG\0";
-    char *choice2 = "INTERACTIVE\0";
-    char *choices[3];
-    choices[0] = choice;
-    choices[1] = choice1;
-    choices[2] = choice2;
-    int mode = render_menu("SNAKE\0", 3, choices);
-#else
-    int mode = 2;
-    if (argc > 2 && !strcmp(argv[2], "--fast")) mode = 0;
-    if (argc > 2 && !strcmp(argv[2], "--strong")) mode = 1;
-#endif
-
-    maze_state_t *maze;
-
-    if (argc > 1) maze = maze_load_file(argv[1]);
-    else exit(EXIT_FAILURE);
-
+void render_loop(maze_state_t *maze, int mode) {
     if (mode == 0) {
         maze_state_t *initial_solution = solve_fast(maze);
         maze_state_t *sim = maze_simulate(maze, path_values(initial_solution->path));
@@ -169,6 +149,10 @@ void render_loop(int argc, char **argv) {
         render_replay(sim);
         render_end_game(sim);
     } else if (mode == 2) {
+        maze_state_t *sim = solve_rl(maze);
+        render_replay(sim);
+        render_end_game(sim);
+    } else {
         render_maze(maze);
         int c;
         while (1) {

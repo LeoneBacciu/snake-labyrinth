@@ -44,11 +44,11 @@ void render_destroy();
 
 /**
  * @brief Renders the main game loop
- * @param argc
- * @param argv
+ * @param maze
+ * @param mode (0 = fast, 1 = strong, 2 = experimental, 3 = interactive)
  */
 
-void render_loop(int argc, char **argv);
+void render_loop(maze_state_t *maze, int mode);
 
 /**
  * @brief Renders the current maze
