@@ -28,7 +28,6 @@ add_executable(snake_labyrinth
         containers/heap.c containers/heap.h
         containers/matrix.c containers/matrix.h
         containers/path.c containers/path.h
-        containers/sequence.c containers/sequence.h
         render/render.c render/render.h
         maze/maze.c maze/maze.h
         utils.c utils.h

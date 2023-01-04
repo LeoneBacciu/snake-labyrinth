@@ -16,7 +16,6 @@ path_t *path_element(int value) {
 path_t *path_add(path_t *path, int value) {
     path_t *node = path_element(value);
     node->prev = path;
-//    node->ref_count = 0;
     if (path == NULL) {
         node->size = 1;
     } else {

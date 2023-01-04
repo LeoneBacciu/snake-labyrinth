@@ -43,7 +43,7 @@ typedef enum {
 #define IS_SNAKE(a) (a >= TAIL_BASE && a < TAIL_BASE_MAX)
 /// @brief Checks if cell is tail head
 #define IS_SNAKE_HEAD(a) (IS_SNAKE(a) && SNAKE_BITS_F(a) == -1)
-/// @brief Checks if cell is tail end
+/// @brief Checks if cell is tail
 #define IS_SNAKE_TAIL(a) (IS_SNAKE(a) && SNAKE_BITS_F(a) != -1)
 
 #define MAX_LIVES 5 ///< @brief Initial lives

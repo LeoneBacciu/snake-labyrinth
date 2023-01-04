@@ -226,7 +226,7 @@ void maze_rollback(maze_state_t *maze, int steps) {
 maze_state_t *maze_simulate(maze_state_t *maze, path_values_t path) {
     maze_state_t *copy = maze_copy(maze);
     copy->path = path_create();
-    for (int i = 0; i < (int) path.size; ++i) {
+    for (size_t i = 0; i <  path.size; ++i) {
         maze_move(copy, path.values[i]);
     }
     return copy;

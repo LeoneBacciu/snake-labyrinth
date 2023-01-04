@@ -23,6 +23,8 @@ maze_state_t *solve_fast(maze_state_t *maze) {
 
     heap_insert(heap, 0, maze_copy(maze));
     matrix_set(highest, cx(maze->head), 0);
+    matrix_set(shortest, cx(maze->head), 0);
+    matrix_set(drillest, cx(maze->head), 0);
 
     while (!heap_empty(heap)) {
         maze_state_t *state = heap_extract(heap);
