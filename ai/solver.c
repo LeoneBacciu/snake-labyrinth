@@ -30,7 +30,7 @@ maze_state_t *solve_fast(maze_state_t *maze) {
 
         if (maze_is_end(state)) {
             if (score > best_score) {
-                best->path = path_copy(state->path);
+                best->path = path_assign(state->path);
                 best_score = score;
             }
             if (state->coins == max_bonus &&
@@ -97,7 +97,7 @@ typedef struct {
 solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
     if (depth == 0) return (solution_t) {INT_MIN, path_create()};
 
-    if (maze_is_end(maze)) return (solution_t) {maze_score(maze), path_copy(maze->path)};
+    if (maze_is_end(maze)) return (solution_t) {maze_score(maze), path_assign(maze->path)};
 
     solution_t final = {INT_MIN, path_create()};
 
