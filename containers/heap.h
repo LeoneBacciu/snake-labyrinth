@@ -52,7 +52,7 @@ heap_t *heap_create(size_t cap);
 /**
  * @brief Inserts a new element in the Heap
  * @param heap
- * @param key the smaller the key, the higher the priority
+ * @param key the higher the key, the higher the priority
  * @param value pointer to any object in memory
  */
 void heap_insert(heap_t *heap, int key, void *value);
@@ -67,7 +67,7 @@ void heap_insert(heap_t *heap, int key, void *value);
 void heap_insert_node(heap_t *heap, heap_node_t node);
 
 /**
- * @brief Extracts the element with the lowest key
+ * @brief Extracts the element with the highest key
  * @param heap
  * @return pointer to the value of the element
  */

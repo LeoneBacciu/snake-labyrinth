@@ -208,7 +208,7 @@ bool maze_can_go(maze_state_t *maze, coord_t coord) {
 }
 
 int maze_score(maze_state_t *maze) {
-    return maze->coins * 10 - maze->steps;
+    return 1000 + maze->coins * 10 - maze->steps;
 }
 
 void maze_rollback(maze_state_t *maze, int steps) {
