@@ -2,10 +2,6 @@
 #include "q_table.h"
 #include "ai/random.h"
 
-int rand_less(int max) {
-    return rand() % max;
-}
-
 bool fix_action(maze_state_t *maze, state_t state, action_t *action) {
     for (int i = 0; i < 4; ++i) {
         if (maze_can_go(maze, c_add(state.coord, movements[(*action + i) % 4]))) {
@@ -37,7 +33,7 @@ maze_state_t *solve_rl(maze_state_t *maze) {
 
         coord_t pos;
         do {
-            pos = c(rand_less(maze->matrix->cols), rand_less(maze->matrix->rows));
+            pos = c(random_range_int(0, maze->matrix->cols - 1), random_range_int(0, maze->matrix->rows - 1));
         } while (!maze_can_go(maze, pos) || c_eq(pos, maze->end));
 
         state_t state = {pos, 0};
@@ -83,7 +79,6 @@ maze_state_t *solve_rl(maze_state_t *maze) {
     state_t st = {maze->head, 0};
     path_t *best_path = path_create();
     while (!c_eq(st.coord, maze->end)) {
-        maze_set(maze, st.coord, 'x');
         action_t action = q_action_max(table, st);
         best_path = path_add(best_path, action);
         st.coord = c_add(st.coord, movements[action]);
