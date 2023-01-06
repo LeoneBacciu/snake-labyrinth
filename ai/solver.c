@@ -10,7 +10,7 @@ maze_state_t *solve_fast(maze_state_t *maze) {
     int max_bonus = 0, max_drills = 0;
     for (int r = 0; r < maze->matrix->rows; ++r) {
         for (int c = 0; c < maze->matrix->cols; ++c) {
-            if (maze_get(maze, c(c, r)) == '$') max_bonus += 10;
+            if (maze_get(maze, c(c, r)) == '$') max_bonus += 1;
             if (maze_get(maze, c(c, r)) == 'T') max_drills += 3;
         }
     }
@@ -37,7 +37,7 @@ maze_state_t *solve_fast(maze_state_t *maze) {
             }
             if (state->coins == max_bonus &&
                 state->drills == max_drills &&
-                !can_outperform(best_score, max_bonus, state))
+                best_score > maze_score(state))
                 break;
 
             maze_free(state);
