@@ -11,11 +11,6 @@ if (WIN32)
 endif ()
 
 find_package(Curses REQUIRED)
-if (WIN32)
-    find_library(MENU_LIBRARY libmenuw)
-else ()
-    find_library(MENU_LIBRARY menu)
-endif ()
 include_directories(${CURSES_INCLUDE_DIR})
 
 include_directories(.)
@@ -34,4 +29,4 @@ add_executable(snake_labyrinth
         maze/maze.c maze/maze.h
         utils.c utils.h
         main.c)
-target_link_libraries(snake_labyrinth ${MENU_LIBRARY} ${CURSES_LIBRARIES})
+target_link_libraries(snake_labyrinth ${CURSES_LIBRARIES})

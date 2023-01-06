@@ -14,10 +14,6 @@
 
 #include "maze/maze.h"
 
-#ifdef USE_MENU
-#include <menu.h>
-#endif
-
 /// @brief Checks if coordinate is a cell vertex
 #define IS_VERTEX(c, r, ratio) (((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2)
 
@@ -62,18 +58,6 @@ void render_maze(maze_state_t *maze);
  */
 
 void render_end_game(maze_state_t *maze);
-
-#ifdef USE_MENU
-/**
- * @brief Renders the menu
- * @param title the title of the game
- * @param choices_count number of possible choices
- * @param choices pointer to different choices
- * @return the value corresponding to the selected choice
- */
-
-int render_menu(char *title, int choices_count, char **choices);
-#endif
 
 /**
  * @brief Renders the replay of the game

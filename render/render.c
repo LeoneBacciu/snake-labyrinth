@@ -128,30 +128,17 @@ char char_to_display(int ch) {
 
 void render_loop(maze_state_t *maze, int mode) {
     if (mode == 0) {
-        maze_state_t *initial_solution = solve_fast(maze);
-        maze_state_t *sim = maze_simulate(maze, path_values(initial_solution->path));
-        for (int i = 0; i < SOLVER_RUNS; ++i) {
-            maze_state_t *tmp = solve_fast(maze);
-            maze_state_t *tmp_sim = maze_simulate(maze, path_values(tmp->path));
-            if (maze_score(sim) < maze_score(tmp_sim)) {
-                maze_free(sim);
-                sim = tmp_sim;
-            } else {
-                maze_free(tmp_sim);
-            }
-            maze_free(tmp);
-        }
-
-        render_replay(sim);
-        render_end_game(sim);
+        maze_state_t *solution = solve_fast(maze);
+        render_replay(solution);
+        render_end_game(solution);
     } else if (mode == 1) {
-        maze_state_t *sim = solve_strong(maze);
-        render_replay(sim);
-        render_end_game(sim);
+        maze_state_t *solution = solve_strong(maze);
+        render_replay(solution);
+        render_end_game(solution);
     } else if (mode == 2) {
-        maze_state_t *sim = solve_rl(maze);
-        render_replay(sim);
-        render_end_game(sim);
+        maze_state_t *solution = solve_rl(maze);
+        render_replay(solution);
+        render_end_game(solution);
     } else {
         render_maze(maze);
         int c;
@@ -282,69 +269,6 @@ void render_end_game(maze_state_t *maze) {
 
 
 }
-
-#ifdef USE_MENU
-int render_menu(char *title, int choices_count, char **choices) {
-    ITEM **items;
-    int c;
-    MENU *menu;
-    WINDOW *window;
-    int width = 0, height = choices_count, current = 0, out_width, out_height, delta_height = 3, delta_width = 1;
-
-    choices_count = choices_count;
-    items = (ITEM **) calloc(choices_count, sizeof(ITEM *));
-    for (int i = 0; i < choices_count; ++i) {
-        items[i] = new_item(choices[i], choices[i]);
-        width = MAX(width, strlen(choices[i]));
-    }
-    items[choices_count] = (ITEM *) NULL;
-    width += 3;
-
-    out_height = height + 4;
-    out_width = width + 4;
-
-    menu = new_menu((ITEM **) items);
-
-    window = newwin(out_height, out_width, (LINES - out_height) / 2, (COLS - out_width) / 2);
-    keypad(window, TRUE);
-
-    set_menu_win(menu, window);
-    set_menu_sub(menu, derwin(window, height, width, delta_height, delta_width));
-
-    set_menu_mark(menu, " * ");
-
-    box(window, 0, 0);
-
-    mvwprintw(window, 1, (int) (out_width - strlen(title)) / 2, "%s", title);
-    refresh();
-
-    mvwaddch(window, 2, 0, ACS_LTEE);
-    mvwhline(window, 2, 1, ACS_HLINE, out_width - 2);
-    mvwaddch(window, 2, out_width - 1, ACS_RTEE);
-    refresh();
-
-    post_menu(menu);
-    wrefresh(window);
-
-    while ((c = wgetch(window)) != '\n') {
-        mvwin(window, (LINES - out_height) / 2, (COLS - out_width) / 2);
-        refresh();
-        post_menu(menu);
-        if (c == 's' || c == 'S' || c == KEY_DOWN)
-            menu_driver(menu, REQ_DOWN_ITEM);
-        if (c == 'w' || c == 'W' || c == KEY_UP)
-            menu_driver(menu, REQ_UP_ITEM);
-        current = item_index(current_item(menu));
-        wrefresh(window);
-    }
-
-    unpost_menu(menu);
-    free_menu(menu);
-    for (int i = 0; i < choices_count; ++i) free_item(items[i]);
-
-    return current;
-}
-#endif
 
 void render_replay(maze_state_t *maze) {
     maze_state_t *copy = maze_copy_initial(maze);

@@ -10,16 +10,8 @@
 #include "containers/path.h"
 #include "containers/heap.h"
 
-#define SOLVER_RUNS 500 ///< @brief Default number of random fast solver runs
-
-/**
- * @brief states if the maze can be completed with a better score
- * @param best_score the best score obtained previously
- * @param max_bonus total coins of the maze
- * @param maze
- * @return true if it can outperform, else false
- */
-bool can_outperform(int best_score, int max_bonus, maze_state_t *maze);
+#define SOLVER_FAST_RUNS 500 ///< @brief Default number of random fast solver runs
+#define SOLVER_STRONG_DEPTH 20 ///< @brief Max depth for strong solver
 
 /**
  * @brief solves the maze (AI FAST)

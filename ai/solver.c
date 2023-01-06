@@ -1,16 +1,16 @@
 #include "solver.h"
 #include "random.h"
 
-maze_state_t *solve_fast(maze_state_t *maze) {
+maze_state_t *solve_fast_internal(maze_state_t *maze) {
     maze_state_t *best = maze_copy(maze);
     int best_score = INT_MIN;
 
     int directions[] = {0, 1, 2, 3};
 
-    int max_bonus = 0, max_drills = 0;
+    int max_coins = 0, max_drills = 0;
     for (int r = 0; r < maze->matrix->rows; ++r) {
         for (int c = 0; c < maze->matrix->cols; ++c) {
-            if (maze_get(maze, c(c, r)) == '$') max_bonus += 1;
+            if (maze_get(maze, c(c, r)) == '$') max_coins += 1;
             if (maze_get(maze, c(c, r)) == 'T') max_drills += 3;
         }
     }
@@ -35,7 +35,7 @@ maze_state_t *solve_fast(maze_state_t *maze) {
                 best->path = path_assign(state->path);
                 best_score = score;
             }
-            if (state->coins == max_bonus &&
+            if (state->coins == max_coins &&
                 state->drills == max_drills &&
                 best_score > maze_score(state))
                 break;
@@ -71,8 +71,18 @@ maze_state_t *solve_fast(maze_state_t *maze) {
     return maze_simulate(best, path_values(best->path));
 }
 
-bool can_outperform(int best_score, int max_bonus, maze_state_t *maze) {
-    return best_score < maze_score(maze) + (max_bonus - maze->coins) * 10;
+maze_state_t *solve_fast(maze_state_t *maze) {
+    maze_state_t *best = solve_fast_internal(maze);
+    for (int i = 0; i < SOLVER_FAST_RUNS; ++i) {
+        maze_state_t *tmp = solve_fast_internal(maze);
+        if (maze_score(best) < maze_score(tmp)) {
+            maze_free(best);
+            best = tmp;
+        } else {
+            maze_free(tmp);
+        }
+    }
+    return best;
 }
 
 /**
@@ -96,7 +106,7 @@ typedef struct {
  * @param depth max depth of solution
  * @return the best solution_t
  */
-solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
+solution_t solve_strong_internal(maze_state_t *maze, matrix_t *visited, int depth) {
     if (depth == 0) return (solution_t) {INT_MIN, path_create()};
 
     if (maze_is_end(maze)) return (solution_t) {maze_score(maze), path_assign(maze->path)};
@@ -116,7 +126,7 @@ solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
         matrix_set(visited, cx(n_pos), maze_score(maze));
 
 
-        solution_t tmp = ciccioricorsione(copy, visited, depth - 1);
+        solution_t tmp = solve_strong_internal(copy, visited, depth - 1);
         maze_free(copy);
         if (tmp.score > final.score) final = tmp;
 
@@ -128,6 +138,6 @@ solution_t ciccioricorsione(maze_state_t *maze, matrix_t *visited, int depth) {
 
 maze_state_t *solve_strong(maze_state_t *maze) {
     matrix_t *visited = matrix_create(maze->matrix->cols, maze->matrix->rows, INT_MIN);
-    solution_t solution = ciccioricorsione(maze, visited, 20);
+    solution_t solution = solve_strong_internal(maze, visited, SOLVER_STRONG_DEPTH);
     return maze_simulate(maze, path_values(solution.path));
 }
