@@ -15,7 +15,7 @@
 #include "maze/maze.h"
 
 /// @brief Checks if coordinate is a cell vertex
-#define IS_VERTEX(c, r, ratio) (((r % ratio == 0) + (c % ratio == 0) + (r % ratio == ratio - 1) + (c % ratio == ratio - 1)) == 2)
+#define IS_VERTEX(c, r, ratio) ((((r) % (ratio) == 0) + ((c) % (ratio) == 0) + ((r) % (ratio) == (ratio) - 1) + ((c) % (ratio) == (ratio) - 1)) == 2)
 
 /**
  * @struct borders_t

@@ -25,8 +25,8 @@
 
 #endif
 
-#define MIN(a, b) (a<b? a : b) ///< @brief Generic min function
-#define MAX(a, b) (a>b? a : b) ///< @brief Generic max function
+#define MIN(a, b) ((a)<(b)? (a) : (b)) ///< @brief Generic min function
+#define MAX(a, b) ((a)>(b)? (a) : (b)) ///< @brief Generic max function
 
 /**
  * @brief Clamps a number between low and high

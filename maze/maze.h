@@ -24,14 +24,14 @@ typedef enum {
 } direction_t;
 
 /// @brief Gives the opposite direction N <-> S, E <-> W
-#define OPP(d) ((d + 2) % 4)
+#define OPP(d) (((d) + 2) % 4)
 
 /// @brief Encodes front and back direction of a tail node
-#define SNAKE_TO_BITS(f, b) (TAIL_BASE + ((f + 1) << 4) + (b + 1))
+#define SNAKE_TO_BITS(f, b) (TAIL_BASE + (((f) + 1) << 4) + ((b) + 1))
 /// @brief Decodes the front direction of a tail node
-#define SNAKE_BITS_F(b) (((b % TAIL_BASE) >> 4) - 1)
+#define SNAKE_BITS_F(b) ((((b) % TAIL_BASE) >> 4) - 1)
 /// @brief Decodes the back direction of a tail node
-#define SNAKE_BITS_B(b) ((b % (1 << 4)) - 1)
+#define SNAKE_BITS_B(b) (((b) % (1 << 4)) - 1)
 
 /// @brief Encodes and sets front and back direction of a tail node
 #define MAZE_SNAKE_SET_BITS(m, c, f, b) maze_set(m, c, SNAKE_TO_BITS(f, b))
@@ -41,7 +41,7 @@ typedef enum {
 #define MAZE_SNAKE_SET_B(m, c, b) maze_set(m, c, SNAKE_TO_BITS(SNAKE_BITS_F(maze_get(m, c)), b))
 
 /// @brief Checks if cell is tail node
-#define IS_SNAKE(a) (a >= TAIL_BASE && a < TAIL_BASE_MAX)
+#define IS_SNAKE(a) ((a) >= TAIL_BASE && (a) < TAIL_BASE_MAX)
 /// @brief Checks if cell is tail head
 #define IS_SNAKE_HEAD(a) (IS_SNAKE(a) && SNAKE_BITS_F(a) == -1)
 /// @brief Checks if cell is tail
