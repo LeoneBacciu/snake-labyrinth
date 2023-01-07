@@ -1,7 +1,17 @@
+/**
+ * @file solver.c
+ */
+
 #include "solver.h"
 #include "random.h"
 
-maze_state_t *solve_fast_internal(maze_state_t *maze) {
+/**
+ * @internal
+ * @brief Executes one run of the fast solver
+ * @param maze
+ * @return the solved maze
+ */
+static maze_state_t *solve_fast_internal(maze_state_t *maze) {
     maze_state_t *best = maze_copy(maze);
     int best_score = INT_MIN;
 
@@ -68,6 +78,8 @@ maze_state_t *solve_fast_internal(maze_state_t *maze) {
         maze_free(state);
     }
 
+    heap_free(heap);
+
     return maze_simulate(best, path_values(best->path));
 }
 
@@ -86,6 +98,7 @@ maze_state_t *solve_fast(maze_state_t *maze) {
 }
 
 /**
+ * @internal
  * @struct solution_t
  * @brief Represents a candidate solution
  *
@@ -100,13 +113,14 @@ typedef struct {
 } solution_t;
 
 /**
+ * @internal
  * @brief Complete search for a solution
  * @param maze
  * @param visited matrix of visited cells
  * @param depth max depth of solution
  * @return the best solution_t
  */
-solution_t solve_strong_internal(maze_state_t *maze, matrix_t *visited, int depth) {
+static solution_t solve_strong_internal(maze_state_t *maze, matrix_t *visited, int depth) {
     if (depth == 0) return (solution_t) {INT_MIN, path_create()};
 
     if (maze_is_end(maze)) return (solution_t) {maze_score(maze), path_assign(maze->path)};

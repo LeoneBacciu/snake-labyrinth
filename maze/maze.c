@@ -1,8 +1,68 @@
+/**
+ * @file maze.c
+ */
+
 #include "maze.h"
 
 const coord_t movements[] = {c(1, 0), c(0, -1), c(-1, 0), c(0, 1)};
 
 const char movement_to_char[] = {'E', 'N', 'W', 'S'};
+
+/**
+ * @brief Shifts the tail one step forward
+ * @param maze
+ */
+static void shift_tail(maze_state_t *maze) {
+    int d = maze_get(maze, maze->tail);
+    int f = SNAKE_BITS_F(d);
+    if (f == -1) return;
+    maze_set(maze, maze->tail, ' ');
+    coord_t n_tail = c_add(maze->tail, movements[f]);
+    MAZE_SNAKE_SET_B(maze, n_tail, -1);
+    maze->tail = n_tail;
+}
+
+/**
+ * @brief Cuts the tail because the snake crossed itself
+ * @param maze
+ * @param pos position of the crossing
+ * @return the new length of the snake
+ */
+static int cut_tail(maze_state_t *maze, coord_t pos) {
+    int vv = maze_get(maze, pos);
+    int s = 0, b = SNAKE_BITS_B(vv), f = SNAKE_BITS_F(vv);
+    maze->tail = c_add(pos, movements[f]);
+    while (b != -1) {
+        pos = c_add(pos, movements[b]);
+        b = SNAKE_BITS_B(maze_get(maze, pos));
+        maze_set(maze, pos, ' ');
+        s++;
+    }
+    MAZE_SNAKE_SET_B(maze, maze->tail, -1);
+    return s;
+}
+
+/**
+ * @brief Makes sure the tail is of the correct length and fixes if needed
+ * @param maze
+ * @param d direction opposite to the head
+ */
+static void fix_tail(maze_state_t *maze, direction_t d) {
+    coord_t pos = maze->head;
+    for (int i = 0; i < maze->coins; ++i) {
+        pos = c_add(pos, movements[d]);
+        d = SNAKE_BITS_B(maze_get(maze, pos));
+    }
+
+    MAZE_SNAKE_SET_B(maze, pos, -1);
+    maze->tail = pos;
+
+    while (d != -1) {
+        pos = c_add(pos, movements[d]);
+        d = SNAKE_BITS_B(maze_get(maze, pos));
+        maze_set(maze, pos, ' ');
+    }
+}
 
 maze_state_t *maze_create(int cols, int rows) {
     maze_state_t *maze = malloc(sizeof(maze_state_t));
@@ -41,47 +101,6 @@ maze_state_t *maze_copy_initial(maze_state_t *maze) {
     n_maze->lives = MAX_LIVES;
     n_maze->path = NULL;
     return n_maze;
-}
-
-void shift_tail(maze_state_t *maze) {
-    int d = maze_get(maze, maze->tail);
-    int f = SNAKE_BITS_F(d);
-    if (f == -1) return;
-    maze_set(maze, maze->tail, ' ');
-    coord_t n_tail = c_add(maze->tail, movements[f]);
-    MAZE_SNAKE_SET_B(maze, n_tail, -1);
-    maze->tail = n_tail;
-}
-
-int cut_tail(maze_state_t *maze, coord_t pos) {
-    int vv = maze_get(maze, pos);
-    int s = 0, b = SNAKE_BITS_B(vv), f = SNAKE_BITS_F(vv);
-    maze->tail = c_add(pos, movements[f]);
-    while (b != -1) {
-        pos = c_add(pos, movements[b]);
-        b = SNAKE_BITS_B(maze_get(maze, pos));
-        maze_set(maze, pos, ' ');
-        s++;
-    }
-    MAZE_SNAKE_SET_B(maze, maze->tail, -1);
-    return s;
-}
-
-void fix_tail(maze_state_t *maze, direction_t d) {
-    coord_t pos = maze->head;
-    for (int i = 0; i < maze->coins; ++i) {
-        pos = c_add(pos, movements[d]);
-        d = SNAKE_BITS_B(maze_get(maze, pos));
-    }
-
-    MAZE_SNAKE_SET_B(maze, pos, -1);
-    maze->tail = pos;
-
-    while (d != -1) {
-        pos = c_add(pos, movements[d]);
-        d = SNAKE_BITS_B(maze_get(maze, pos));
-        maze_set(maze, pos, ' ');
-    }
 }
 
 bool maze_move(maze_state_t *maze, direction_t direction) {
@@ -195,6 +214,19 @@ maze_state_t *maze_load_stdin() {
     return maze;
 }
 
+int maze_distance_from_tail(maze_state_t *maze, coord_t coord) {
+    if (!IS_SNAKE(maze_get(maze, coord))) return INT_MIN;
+
+    int i = 0;
+    int d = SNAKE_BITS_B(maze_get(maze, coord));
+    while (d != -1) {
+        coord = c_add(coord, movements[d]);
+        d = SNAKE_BITS_B(maze_get(maze, coord));
+        i++;
+    }
+    return i;
+}
+
 bool maze_is_end(maze_state_t *maze) {
     return c_eq(maze->head, maze->end);
 }
@@ -226,7 +258,7 @@ void maze_rollback(maze_state_t *maze, int steps) {
 maze_state_t *maze_simulate(maze_state_t *maze, path_values_t path) {
     maze_state_t *copy = maze_copy(maze);
     copy->path = path_create();
-    for (size_t i = 0; i <  path.size; ++i) {
+    for (size_t i = 0; i < path.size; ++i) {
         maze_move(copy, path.values[i]);
     }
     return copy;

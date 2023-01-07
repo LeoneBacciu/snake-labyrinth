@@ -58,15 +58,6 @@ heap_t *heap_create(size_t cap);
 void heap_insert(heap_t *heap, int key, void *value);
 
 /**
- * @brief Inserts a Node directly
- * @note Not suggested
- * @param heap
- * @param node instance of a heap_node_t
- * @see heap_insert
- */
-void heap_insert_node(heap_t *heap, heap_node_t node);
-
-/**
  * @brief Extracts the element with the highest key
  * @param heap
  * @return pointer to the value of the element
@@ -99,44 +90,3 @@ void heap_destroy(heap_t *heap);
  * @param heap
  */
 void heap_free(heap_t *heap);
-
-/**
- * @brief Gets the ith node
- * @attention For internal use only
- * @param heap
- * @param i index in the internal array
- * @return pointer to ith node
- */
-heap_node_t *heap_get(heap_t *heap, size_t i);
-
-/**
- * @brief Calculates the index of the parent
- * @attention For internal use only
- * @param i child
- * @return parent
- */
-size_t heap_parent_index(size_t i);
-
-/**
- * @brief Calculates the index of the left child
- * @attention For internal use only
- * @param i parent
- * @return child
- */
-size_t heap_lchild_index(size_t i);
-
-/**
- * @brief Calculates the index of the right child
- * @attention For internal use only
- * @param i parent
- * @return child
- */
-size_t heap_rchild_index(size_t i);
-
-/**
- * @brief Swaps two nodes
- * @attention For internal use only
- * @param a pointer to first node
- * @param b pointer to second node
- */
-void heap_swap_nodes(heap_node_t *a, heap_node_t *b);

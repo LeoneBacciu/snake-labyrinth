@@ -1,31 +1,112 @@
+/**
+ * @file render.c
+ */
+
 #include "render.h"
 #include "ai/solver.h"
 #include "ai/rl/agent.h"
 
-#define MCOLOR_DEFAULT 0
-#define MCOLOR_ME 1
-#define MCOLOR_GOLD 2
-#define MCOLOR_DANGER 3
-#define MCOLOR_END 4
-#define MCOLOR_WALL 5
-#define MCOLOR_WIN 6
-#define MCOLOR_NSCORE 7
-#define MCOLOR_PSCORE 8
-#define MCOLOR_LIVES 9
-#define MCOLOR_DRILL 10
-#define MCOLOR_NDRILL 11
-#define MCOLOR_TAIL 12
+#define MCOLOR_DEFAULT 0 ///< @brief white - black
+#define MCOLOR_ME 1 ///< @brief white - green
+#define MCOLOR_GOLD 2 ///< @brief yellow - black
+#define MCOLOR_DANGER 3 ///< @brief white - red
+#define MCOLOR_END 4 ///< @brief white - magenta
+#define MCOLOR_WALL 5 ///< @brief white - blue
+#define MCOLOR_WIN 6 ///< @brief yellow - black
+#define MCOLOR_NSCORE 7 ///< @brief red - black
+#define MCOLOR_PSCORE 8 ///< @brief green - black
+#define MCOLOR_LIVES 9 ///< @brief red - black
+#define MCOLOR_DRILL 10 ///< @brief white - yellow
+#define MCOLOR_NDRILL 11 ///< @brief yellow - black
+#define MCOLOR_TAIL 12 ///< @brief white - yellow
 
-#define YOU_WON_LINES 5
-#define YOU_WON_COLS 43
+#define YOU_WON_LINES 5 ///< @brief Endgame text height
+#define YOU_WON_COLS 43 ///< @brief Endgame text width
 
-char you_won[YOU_WON_LINES][YOU_WON_COLS + 1] = {
+/// @brief Endgame Text
+static char you_won[YOU_WON_LINES][YOU_WON_COLS + 1] = {
         {" \\ \\   / /          \\ \\        / /         \0"},
         {"  \\ \\_/ /__  _   _   \\ \\  /\\  / /__  _ __  \0"},
         {"   \\   / _ \\| | | |   \\ \\/  \\/ / _ \\| '_ \\ \0"},
         {"    | | (_) | |_| |    \\  /\\  / (_) | | | |\0"},
         {"    |_|\\___/ \\__,_|     \\/  \\/ \\___/|_| |_|\0"}
 };
+
+
+/**
+ * @internal
+ * @brief Moves the player given the key pressed
+ * @param maze
+ * @param ch id of the key
+ */
+static void move_player(maze_state_t *maze, int ch) {
+    if (ch == 'w' || ch == 'W' || ch == KEY_UP) maze_move(maze, UP);
+    if (ch == 'a' || ch == 'A' || ch == KEY_LEFT) maze_move(maze, LEFT);
+    if (ch == 's' || ch == 'S' || ch == KEY_DOWN) maze_move(maze, DOWN);
+    if (ch == 'd' || ch == 'D' || ch == KEY_RIGHT) maze_move(maze, RIGHT);
+}
+
+/**
+ * @internal
+ * @brief Gets the corresponding color pair for a char
+ * @param ch
+ * @return the color pair
+ */
+static attr_t char_to_color(int ch) {
+    switch (ch) {
+        case 't':
+            return COLOR_PAIR(MCOLOR_TAIL);
+        case 'o':
+            return COLOR_PAIR(MCOLOR_ME);
+        case 'O':
+            return COLOR_PAIR(MCOLOR_ME);
+        case 'x':
+            return COLOR_PAIR(MCOLOR_ME);
+        case '$':
+            return COLOR_PAIR(MCOLOR_GOLD);
+        case '!':
+            return COLOR_PAIR(MCOLOR_DANGER);
+        case '_':
+            return COLOR_PAIR(MCOLOR_END);
+        case '#':
+            return COLOR_PAIR(MCOLOR_WALL);
+        case 'T':
+            return COLOR_PAIR(MCOLOR_DRILL);
+        default:
+            return COLOR_PAIR(MCOLOR_DEFAULT);
+    }
+}
+
+/**
+ * @internal
+ * @brief Gets the corresponding border pattern for a char
+ * @param ch
+ * @return the borders
+ */
+static borders_t char_to_border(int ch) {
+    if (ch == '$' || ch == '!' || ch == 'T')
+        return (borders_t) {true, true, true, true};
+    if (IS_SNAKE_TAIL(ch)) {
+        borders_t borders = {true, true, true, true};
+        if (SNAKE_BITS_B(ch) != -1)
+            borders.b[SNAKE_BITS_B(ch)] = false;
+        borders.b[SNAKE_BITS_F(ch)] = false;
+        return borders;
+    }
+    return (borders_t) {false, false, false, false};
+}
+
+/**
+ * @internal
+ * @brief Gets the character to display in the terminal from a char
+ * @param ch
+ * @return the character
+ */
+static char char_to_display_char(int ch) {
+    if (ch == '$' || ch == '!' || ch == 'T') return ch;
+    if (ch == 't') return '*';
+    return ' ';
+}
 
 void render_init() {
     initscr();
@@ -63,69 +144,6 @@ void render_destroy() {
     endwin();
 }
 
-void char_to_move(maze_state_t *maze, int c) {
-    if (c == 'w' || c == 'W' || c == KEY_UP) maze_move(maze, UP);
-    if (c == 'a' || c == 'A' || c == KEY_LEFT) maze_move(maze, LEFT);
-    if (c == 's' || c == 'S' || c == KEY_DOWN) maze_move(maze, DOWN);
-    if (c == 'd' || c == 'D' || c == KEY_RIGHT) maze_move(maze, RIGHT);
-}
-
-attr_t char_to_color(int ch) {
-    switch (ch) {
-        case 't':
-            return COLOR_PAIR(MCOLOR_TAIL);
-        case 'o':
-            return COLOR_PAIR(MCOLOR_ME);
-        case 'O':
-            return COLOR_PAIR(MCOLOR_ME);
-        case 'x':
-            return COLOR_PAIR(MCOLOR_ME);
-        case '$':
-            return COLOR_PAIR(MCOLOR_GOLD);
-        case '!':
-            return COLOR_PAIR(MCOLOR_DANGER);
-        case '_':
-            return COLOR_PAIR(MCOLOR_END);
-        case '#':
-            return COLOR_PAIR(MCOLOR_WALL);
-        case 'T':
-            return COLOR_PAIR(MCOLOR_DRILL);
-        default:
-            return COLOR_PAIR(MCOLOR_DEFAULT);
-    }
-}
-
-borders_t is_trim_char(int ch) {
-    if (ch == '$' || ch == '!' || ch == 'T')
-        return (borders_t) {true, true, true, true};
-    if (IS_SNAKE_TAIL(ch)) {
-        borders_t borders = {true, true, true, true};
-        if (SNAKE_BITS_B(ch) != -1)
-            borders.b[SNAKE_BITS_B(ch)] = false;
-        borders.b[SNAKE_BITS_F(ch)] = false;
-        return borders;
-    }
-    return (borders_t) {false, false, false, false};
-}
-
-int distance_from_tail(maze_state_t *maze, coord_t pos) {
-    int i = 0;
-    int d = SNAKE_BITS_B(maze_get(maze, pos));
-    while (d != -1) {
-        pos = c_add(pos, movements[d]);
-        d = SNAKE_BITS_B(maze_get(maze, pos));
-        i++;
-    }
-    return i;
-}
-
-char char_to_display(int ch) {
-    if (ch == '$' || ch == '!' || ch == 'T') return ch;
-    if (ch == 't') return '*';
-    return ' ';
-}
-
-
 void render_loop(maze_state_t *maze, int mode) {
     if (mode == 0) {
         maze_state_t *solution = solve_fast(maze);
@@ -145,7 +163,7 @@ void render_loop(maze_state_t *maze, int mode) {
         while (1) {
             c = getch();
             if (c == 'q') break;
-            char_to_move(maze, c);
+            move_player(maze, c);
             if (c == 'u') {
                 maze_rollback(maze, 5);
             }
@@ -211,7 +229,7 @@ void render_maze(maze_state_t *maze) {
 
             int ch = maze_get(maze, c(nc, nr));
 
-            borders_t borders = is_trim_char(ch);
+            borders_t borders = char_to_border(ch);
 
             if (ratio > 2 &&
                 ((borders.b[0] && c % ratio == ratio - 1 ||
@@ -222,7 +240,7 @@ void render_maze(maze_state_t *maze) {
                 ch = ' ';
 
             if (IS_SNAKE(ch)) {
-                if (maze->coins > 4 && distance_from_tail(maze, c(nc, nr)) < 2) ch = 't';
+                if (maze->coins > 4 && maze_distance_from_tail(maze, c(nc, nr)) < 2) ch = 't';
                 else ch = IS_SNAKE_HEAD(ch) ? 'O' : 'o';
             }
 
@@ -233,7 +251,7 @@ void render_maze(maze_state_t *maze) {
                 last_color = color;
             }
 
-            mvaddch((LINES - rows_term) / 2 + r, (COLS - cols_term) / 2 + c, char_to_display(ch));
+            mvaddch((LINES - rows_term) / 2 + r, (COLS - cols_term) / 2 + c, char_to_display_char(ch));
         }
     }
     refresh();

@@ -14,15 +14,17 @@
 #define SOLVER_STRONG_DEPTH 20 ///< @brief Max depth for strong solver
 
 /**
- * @brief solves the maze (AI FAST)
+ * @brief Solves the maze (AI FAST)
  * @param maze
  * @return the solved maze
+ * @see @ref md_REPORT
  */
 maze_state_t *solve_fast(maze_state_t *maze);
 
 /**
- * @brief solves the maze (AI STRONG)
+ * @brief Solves the maze (AI STRONG)
  * @param maze
  * @return the solved maze
+ * @see @ref md_REPORT
  */
 maze_state_t *solve_strong(maze_state_t *maze);

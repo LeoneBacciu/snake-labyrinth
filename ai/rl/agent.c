@@ -1,8 +1,14 @@
 #include "agent.h"
-#include "q_table.h"
-#include "ai/random.h"
 
-bool fix_action(maze_state_t *maze, state_t state, action_t *action) {
+/**
+ * @internal
+ * @brief Transform the action in a visitable one
+ * @param maze
+ * @param state
+ * @param action
+ * @return true if the action can be fixed, else false
+ */
+static bool fix_action(maze_state_t *maze, state_t state, action_t *action) {
     for (int i = 0; i < 4; ++i) {
         if (maze_can_go(maze, c_add(state.coord, movements[(*action + i) % 4]))) {
             *action = (*action + i) % 4;

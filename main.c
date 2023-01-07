@@ -9,6 +9,37 @@ void signal_handler() {
     exit(EXIT_SUCCESS);
 }
 
+/*!
+ * @mainpage
+ * @b Welcome to the Snake Labyrinth documentation!
+ *
+ * To run with AI, specify one of the flags:
+ *  - `--fast`: for fast AI
+ *  - `--strong`: for strong AI
+ *  - `--experimental`: for experimental AI
+ *
+ * After you can optionally specify the path for the maze file.
+ * If not specified the maze will be loaded from stdin.
+ *
+ * Command:
+ *  - `snake_labyrinth [AI FLAG] [MAZE DIRECTORY]`
+ *
+ * Examples:
+ *  - `./snake_labyrinth --strong`
+ *  - `./snake_labyrinth --fast maze.txt`
+ *  - `./snake_labyrinth maze.txt`
+ *  - `./snake_labyrinth`
+ *
+ *
+ * To build, with CMake:
+ *  - `cmake [SOURCE DIRECTORY] -B [BUILD DIRECTORY]`
+ *  - `cmake --build [BUILD DIRECTORY] --target snake_labyrinth`
+ *
+ * For the full report: @ref md_REPORT
+ *
+ * @authors Leone Bacciu (894862)
+ * @authors Marco Diotto (895937)
+ */
 int main(int argc, char **argv) {
     random_init();
     setlocale(LC_ALL, "");

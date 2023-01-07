@@ -1,3 +1,7 @@
+/**
+ * @file matrix.c
+ */
+
 #include "matrix.h"
 
 matrix_t *matrix_create(size_t cols, size_t rows, int val) {

@@ -1,3 +1,7 @@
+/**
+ * @file path.c
+ */
+
 #include "path.h"
 
 path_t *path_create() {

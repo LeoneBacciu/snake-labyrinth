@@ -1,7 +1,18 @@
-#include <float.h>
+/**
+ * @file q_table.c
+ */
+
 #include "q_table.h"
 
-size_t q_table_index(q_table_t *table, state_t state, action_t action) {
+/**
+ * @internal
+ * @brief Calculates the index for the state-action pair
+ * @param table
+ * @param state
+ * @param action
+ * @return the index in the table array
+ */
+static size_t q_table_index(q_table_t *table, state_t state, action_t action) {
     size_t py = state.coord.y * table->nx * table->nd * table->na;
     size_t px = state.coord.x * table->nd * table->na;
     size_t pd = state.depth * table->na;
@@ -52,8 +63,8 @@ action_t q_action_max(q_table_t *table, state_t state) {
     return mxa;
 }
 
-void q_value_set(q_table_t *table, state_t state, action_t action, reward_t q_value) {
-    table->table[q_table_index(table, state, action)] = MAX(Q_MIN, q_value);
+void q_value_set(q_table_t *table, state_t state, action_t action, reward_t reward) {
+    table->table[q_table_index(table, state, action)] = MAX(Q_MIN, reward);
 }
 
 void q_update(q_table_t *table, state_t state, state_t n_state, action_t action, reward_t reward) {
@@ -65,29 +76,3 @@ void q_update(q_table_t *table, state_t state, state_t n_state, action_t action,
 
     q_value_set(table, state, action, (1 - table->lr) * left + (table->lr) * right);
 }
-
-void q_print(q_table_t *table) {
-    for (int dd = 0; dd < table->nd; ++dd) {
-        printf("\nDepth: %d\n", dd);
-        for (int yy = 0; yy < table->ny; ++yy) {
-            for (int xx = 0; xx < table->nx; ++xx) {
-                state_t st = {c(xx, yy), dd};
-                printf("%04.0f ", q_value_max(table, st));
-            }
-            printf("\n");
-        }
-    }
-    for (int dd = 0; dd < table->nd; ++dd) {
-        printf("\nDepth: %d\n", dd);
-        for (int yy = 0; yy < table->ny; ++yy) {
-            for (int xx = 0; xx < table->nx; ++xx) {
-                state_t st = {c(xx, yy), dd};
-                if (q_value_max(table, st) == Q_MIN) printf("0");
-                else printf("%c", movement_to_char[q_action_max(table, st)]);
-            }
-            printf("\n");
-        }
-    }
-}
-
-

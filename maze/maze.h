@@ -6,6 +6,7 @@
 #pragma once
 
 #include <stdlib.h>
+#include <limits.h>
 #include "utils.h"
 #include "containers/coord.h"
 #include "containers/matrix.h"
@@ -174,6 +175,15 @@ maze_state_t *maze_load_file(char *path);
  * @return maze_state_t*
  */
 maze_state_t *maze_load_stdin();
+
+/**
+ * @internal
+ * @brief Calculates the distance from a position to the tail
+ * @param maze
+ * @param coord
+ * @return the distance if the position is on the snake, else INT_MIN
+ */
+int maze_distance_from_tail(maze_state_t *maze, coord_t coord);
 
 /**
  * @brief Checks player reached end
