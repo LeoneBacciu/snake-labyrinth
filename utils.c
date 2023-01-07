@@ -1,5 +1,8 @@
-#include "utils.h"
+/**
+ * @file utils.c
+ */
 
+#include "utils.h"
 
 int clamp(const int low, const int value, const int high) {
     return value < low ? low : (value > high ? high : value);
