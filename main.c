@@ -35,6 +35,9 @@ void signal_handler() {
  *  - `cmake [SOURCE DIRECTORY] -B [BUILD DIRECTORY]`
  *  - `cmake --build [BUILD DIRECTORY] --target snake_labyrinth`
  *
+ * To generate the documentation:
+ *  - `doxygen [Doxyfile PATH]`
+ *
  * For the full report: @ref md_REPORT
  *
  * @authors Leone Bacciu (894862)
