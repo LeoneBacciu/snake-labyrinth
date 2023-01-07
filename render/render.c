@@ -57,9 +57,7 @@ static attr_t char_to_color(int ch) {
         case 't':
             return COLOR_PAIR(MCOLOR_TAIL);
         case 'o':
-            return COLOR_PAIR(MCOLOR_ME);
         case 'O':
-            return COLOR_PAIR(MCOLOR_ME);
         case 'x':
             return COLOR_PAIR(MCOLOR_ME);
         case '$':
