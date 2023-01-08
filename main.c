@@ -22,7 +22,7 @@ void signal_handler() {
  * If not specified the maze will be loaded from stdin.
  *
  * Command:
- *  - `snake_labyrinth [AI FLAG] [MAZE DIRECTORY]`
+ *  - `snake_labyrinth [AI FLAG] [MAZE PATH]`
  *
  * Examples:
  *  - `./snake_labyrinth --strong`
@@ -33,6 +33,10 @@ void signal_handler() {
  *
  * To build, with CMake:
  *  - `cmake [SOURCE DIRECTORY] -B [BUILD DIRECTORY]`
+ *  - `cmake --build [BUILD DIRECTORY] --target snake_labyrinth`
+ *
+ * If NCurses is not found, try running:
+ *  - `cmake [SOURCE DIRECTORY] -B [BUILD DIRECTORY] -DCURSES_LIBRARY=[/path/to/libcurses.a] -DCURSES_INCLUDE_PATH=[/path/to/include/]`
  *  - `cmake --build [BUILD DIRECTORY] --target snake_labyrinth`
  *
  * To generate the documentation:
