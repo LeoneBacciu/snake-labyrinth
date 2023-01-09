@@ -4,10 +4,10 @@
 
 Il nostro gruppo si compone di due membri dotati di conoscenze pregresse differenti in ambito informatico.
 
-(matricola: 894862) possiede una particolare esperienza nella materia, avendo già frequentato un ITIS informatico, e
+Leone Bacciu (matricola: 894862) possiede una particolare esperienza nella materia, avendo già frequentato un ITIS informatico, e
 avendo più volte partecipato alle Olimpiadi di Informatica.
 
-(matricola: 895937) proviene da un percorso di studi completamente differente e non possedeva alcuna conoscenza
+Marco Diotto (matricola: 895937) proviene da un percorso di studi completamente differente e non possedeva alcuna conoscenza
 informatica prima dell’inizio del corso.
 
 Proprio a causa dell'eterogeneità del gruppo le principali difficoltà incontrate riguardano l’implementazione e la

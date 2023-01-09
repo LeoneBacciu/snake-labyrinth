@@ -31,7 +31,7 @@ void signal_handler() {
  *  - `./snake_labyrinth`
  *
  *
- * To build, with CMake:
+ * To build, with CMake (on Windows use MinGW):
  *  - `cmake [SOURCE DIRECTORY] -B [BUILD DIRECTORY]`
  *  - `cmake --build [BUILD DIRECTORY] --target snake_labyrinth`
  *
