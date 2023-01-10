@@ -69,7 +69,7 @@ Il codice si compone di quattro parti principali:
        in labirinti piuttosto piccoli e con una profondità limitata, in quanto l’aumento di quest’ultima porta i
        possibili percorsi ad un numero esponenziale con conseguente sfruttamento di memoria che rende la funzione
        talvolta impossibile da utilizzare.
-    3. **AI Experimental (Bacciu):** è una soluzione estremamente poco rifinita, che implementa un algoritmo di
+    3. **AI Experimental (Bacciu, miglioria individuale):** è una soluzione estremamente poco rifinita, che implementa un algoritmo di
        Reinforcement Learning, nello specifico [Q-Learning](https://en.m.wikipedia.org/wiki/Q-learning). L’algoritmo
        esegue moltissime simulazioni (episodi) dove ad ogni step decide casualmente se scegliere una direzione
        arbitraria o utilizzare le informazioni sul punteggio ottenibile in quella direzione, ottenute negli episodi
