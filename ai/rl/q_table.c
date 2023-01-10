@@ -1,5 +1,6 @@
 /**
  * @file q_table.c
+ * @author Leone Bacciu
  */
 
 #include "q_table.h"

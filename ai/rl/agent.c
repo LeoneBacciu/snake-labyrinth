@@ -1,5 +1,6 @@
 /**
  * @file agent.c
+ * @author Leone Bacciu
  */
 #include "agent.h"
 

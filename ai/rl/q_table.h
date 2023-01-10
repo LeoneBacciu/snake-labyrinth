@@ -1,6 +1,7 @@
 /**
  * @file q_table.h
  * @brief Q-Table implementation
+ * @author Leone Bacciu
  */
 
 #pragma once

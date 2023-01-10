@@ -1,6 +1,7 @@
 /**
  * @file agent.h
  * @brief AI Q-Learning solver
+ * @author Leone Bacciu
  */
 
 #pragma once
